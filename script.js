@@ -27,7 +27,7 @@ let customers = [{
         status: "inactive"
     },
     {
-        name: { first: "Wyatt", last: "Cox" },
+        name: { first: "Wyatt", last: "loof Cox" },
         id: 7867875643,
         description: "We provide more than just expert customer experience professionals for your project.",
         rate: "70.00",
@@ -280,6 +280,8 @@ let customers = [{
     }
 ];
 
+let local = customers;
+
 const customerField = document.querySelector("table tbody");
 const selectElement = document.querySelector("select");
 const activeClientsElement = document.getElementById("active-clients");
@@ -297,15 +299,15 @@ function addClient(clientsInfo) {
         creatElement(client)
     });
 
-    numberOfActiveClients = countActiveClients(customers);
+    numberOfActiveClients = countActiveClients(local);
 
-    activeClientsElement.innerHTML = `active customers: <strong>${numberOfActiveClients}</strong> / <small>${customers.length}</small> `;
-    displayRowsElement.innerHTML = `1-${clientsInfo.length} of ${customers.length}`;
+    activeClientsElement.innerHTML = `active customers: <strong>${numberOfActiveClients}</strong> / <small>${local.length}</small> `;
+    displayRowsElement.innerHTML = `1-${clientsInfo.length} of ${local.length}`;
 }
 
 selectElement.addEventListener("change", () => {
     assignStartINdStopI()
-    addClient(selectRows(customers))
+    addClient(selectRows(local))
 });
 
 searchField.addEventListener("keyup", searchClients);
@@ -316,18 +318,18 @@ let startIndex = 0;
 let stopIndex = 0;
 
 function goToNextcustomers() {
-    if (stopIndex < customers.length && customers.length > selectElement.value) {
-        startIndex += selectRows(customers).length;
-        stopIndex = (startIndex + selectRows(customers).length);
-        let nextClients = customers.slice(startIndex, stopIndex);
+    if (stopIndex < local.length && local.length > selectElement.value) {
+        startIndex += selectRows(local).length;
+        stopIndex = (startIndex + selectRows(local).length);
+        let nextClients = local.slice(startIndex, stopIndex);
         addClient(nextClients)
-        if (stopIndex > customers.length) {
-            stopIndex -= selectRows(customers).length - nextClients.length
+        if (stopIndex > local.length) {
+            stopIndex -= selectRows(local).length - nextClients.length
         }
 
-        displayRowsElement.innerHTML = `${startIndex+1}-${stopIndex} of ${customers.length}`;
-    } else if (customers.length < selectElement.value) {
-        let allClients = customers.slice();
+        displayRowsElement.innerHTML = `${startIndex+1}-${stopIndex} of ${local.length}`;
+    } else if (local.length < selectElement.value) {
+        let allClients = local.slice();
         addClient(allClients)
     }
 }
@@ -335,13 +337,13 @@ function goToNextcustomers() {
 
 
 function goToPreviouscustomers() {
-    if (startIndex >= selectRows(customers).length) {
-        startIndex -= selectRows(customers).length;
-        stopIndex = (startIndex + selectRows(customers).length);
-        let nextClients = customers.slice(startIndex, stopIndex);
+    if (startIndex >= selectRows(local).length) {
+        startIndex -= selectRows(local).length;
+        stopIndex = (startIndex + selectRows(local).length);
+        let nextClients = local.slice(startIndex, stopIndex);
         addClient(nextClients)
 
-        displayRowsElement.innerHTML = `${startIndex+1}-${stopIndex} of ${customers.length}`;
+        displayRowsElement.innerHTML = `${startIndex+1}-${stopIndex} of ${local.length}`;
     }
 }
 
@@ -352,33 +354,42 @@ function assignStartINdStopI() {
 
 function searchClients() {
     let valueSearched = searchField.value.toLowerCase();
-    let clientsfound = customers.filter(client => {
+    local = customers.filter(client => {
         return (client.name.first.toLowerCase() + " " + client.name.last.toLowerCase()).includes(valueSearched) || client.description.toLowerCase().includes(valueSearched);
     })
-    addClient(selectRows(clientsfound));
+    addClient(selectRows(local));
     assignStartINdStopI()
 }
 
-function sortActiveClients() {
-    let activeClients = customers.filter((client) => {
-        return client.status === "active";
-    })
+function sortFromActiveToInactive() {
+    let active = [];
+    let inactive = []
+    for (let i = 0; i < local.length; i++) {
+        if (local[i].status === "active") {
+            active.push(local[i])
+        } else {
+            inactive.push(local[i])
+        }
+    }
+    local = active.concat(inactive);
+    return local;
+}
 
-    addClient(selectRows(activeClients))
+function sortActiveClients() {
+    local = sortFromActiveToInactive()
+
+    addClient(selectRows(local))
     assignStartINdStopI()
 }
 
 function sortInactiveClients() {
-    let inactiveClients = customers.filter((client) => {
-        return client.status === "inactive";
-    })
-
-    addClient(selectRows(inactiveClients))
+    local = sortFromActiveToInactive().reverse()
+    addClient(selectRows(local))
     assignStartINdStopI()
 }
 
 function sortAsc() {
-    let sortedClients = customers.sort((client1, client2) => {
+    local = local.sort((client1, client2) => {
         if (client1.name.first < client2.name.first) {
             return -1;
         }
@@ -388,12 +399,12 @@ function sortAsc() {
         return 0;
     })
 
-    addClient(selectRows(sortedClients))
+    addClient(selectRows(local))
     assignStartINdStopI()
 }
 
 function sortDesc() {
-    let sortedClients = customers.sort((client1, client2) => {
+    local = local.sort((client1, client2) => {
         if (client1.name.first > client2.name.first) {
             return -1;
         }
@@ -403,7 +414,7 @@ function sortDesc() {
         return 0;
     })
 
-    addClient(selectRows(sortedClients))
+    addClient(selectRows(local))
     assignStartINdStopI()
 
 }
@@ -445,10 +456,10 @@ function creatElement(clientInfo) {
     trashIcon.onclick = function deleteClient(e) {
         if (confirm("are you sure")) {
             let elementId = e.target.parentNode.parentNode.firstElementChild.nextElementSibling.lastElementChild.textContent;
-            customers = customers.filter(client => {
+            local = local.filter(client => {
                 return client.id != elementId;
             })
-            addClient(selectRows(customers));
+            addClient(selectRows(local));
             assignStartINdStopI()
         }
     }
@@ -511,6 +522,5 @@ function styleOutClickedElement(clickedelement) {
         return elem !== clickedelement
     })
 
-    elementClickedOut[0].classList.remove("sort-asc")
-    elementClickedOut[0].classList.remove("sort-desc")
+    elementClickedOut[0].classList.remove("sort-asc", "sort-desc")
 }

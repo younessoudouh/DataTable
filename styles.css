@@ -11,8 +11,8 @@ li {
     --primary-color: #2E3B52;
     --secondary-color: #606F89;
     --stripes: #F4F7FC;
-    --font-primary: var(--font-primary);
-    --font-secondary: var(--font-secondary);
+    --font-primary: 14px;
+    --font-secondary: 12px;
     --negative: #E01A1A;
     --positive: #008400;
 }
@@ -55,6 +55,7 @@ i {
     background: #DAE1EC;
     outline: none;
     color: var(--primary-color);
+    width: 85%;
 }
 
 .search-input::placeholder {
@@ -66,14 +67,6 @@ i {
 
 table {
     width: 100%;
-}
-
-.circle {
-    margin-right: 3px;
-    width: 4.29px;
-    height: 4.29px;
-    color: var(--secondary-color);
-    border-radius: 50%;
 }
 
 table th {
@@ -107,6 +100,7 @@ table thead tr {
     background-image: url(images/sort_both.png);
     background-position: right center;
     background-repeat: no-repeat;
+    cursor: pointer;
 }
 
 .sort-asc {
@@ -146,7 +140,7 @@ footer ul {
 select {
     border: 0;
     color: #606F89;
-    font-size: var(--font-secondary);
+    font-size: var(--font-primary);
     outline: none;
 }
 
@@ -185,7 +179,7 @@ select {
     color: var(--primary-color);
     font-size: var(--font-primary);
     font-style: normal;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 17px;
     white-space: nowrap;
 }
