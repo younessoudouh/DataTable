@@ -212,3 +212,7 @@ select {
     color: #7D90B2;
     font-size: var(--font-secondary);
 }
+
+tbody tr:hover {
+    background: #DAE1EC;
+}
