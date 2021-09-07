@@ -62,7 +62,6 @@ i {
     color: #2E3B52;
     font-size: var(--font-primary);
     color: var(--primary-color);
-    font-weight: normal;
 }
 
 table {
@@ -175,10 +174,9 @@ select {
     color: var(--negative);
 }
 
-.client-name {
+.customer-name {
     color: var(--primary-color);
     font-size: var(--font-primary);
-    font-style: normal;
     font-weight: 600;
     line-height: 17px;
     white-space: nowrap;
@@ -192,7 +190,6 @@ select {
 .description {
     color: var(--primary-color);
     font-size: var(--font-primary);
-    font-weight: 400;
     display: -webkit-box;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -204,7 +201,6 @@ select {
     color: var(--secondary-color);
     font-size: var(--font-secondary);
     text-transform: uppercase;
-    font-weight: normal;
     text-align: center;
 }
 
