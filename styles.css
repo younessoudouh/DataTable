@@ -59,7 +59,6 @@ i {
 }
 
 .search-input::placeholder {
-    color: #2E3B52;
     font-size: var(--font-primary);
     color: var(--primary-color);
 }
@@ -93,6 +92,17 @@ tr:nth-child(even) {
 
 table thead tr {
     background-color: var(--stripes);
+}
+
+.name-field {
+    width: 190px;
+}
+
+h3 {
+    text-align: center;
+    font-size: var(--font-primary);
+    color: var(--primary-color);
+    font-weight: 400;
 }
 
 .sorting {
@@ -206,9 +216,110 @@ select {
 
 .fa-trash-alt {
     color: #7D90B2;
-    font-size: var(--font-secondary);
+    font-size: 16px;
 }
 
 tbody tr:hover {
     background: #DAE1EC;
+}
+
+.validation-form {
+    padding: 30px;
+    background-color: var(--stripes);
+}
+
+form {
+    width: 30%;
+    margin: auto;
+    display: none;
+}
+
+.form-container {
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.add-customer-input {
+    border: 0;
+    background: #DAE1EC;
+    outline: none;
+    color: var(--primary-color);
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.add-customer-input::placeholder {
+    font-size: var(--font-primary);
+    color: var(--primary-color);
+    font-family: inherit;
+}
+
+.add-customer {
+    margin-bottom: 10px;
+    color: #7D90B2;
+    text-align: center;
+}
+
+.btn-submit {
+    display: block;
+    width: 50%;
+    margin: 10px auto;
+    font-size: 18px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-submit:hover {
+    background: rgb(2, 71, 190);
+}
+
+.error {
+    border: 1px solid var(--negative);
+}
+
+.success {
+    border: 1px solid var(--positive);
+}
+
+input.error+small,
+textarea.error+small,
+select.error+small {
+    color: var(--negative);
+    visibility: visible;
+}
+
+textarea.success+small,
+input.success+small,
+select.success+small {
+    visibility: hidden;
+}
+
+.fa-check-circle {
+    color: rgb(0, 128, 107);
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    visibility: hidden;
+}
+
+form>div {
+    position: relative;
+}
+
+.show {
+    visibility: visible;
+}
+
+.show-form {
+    display: block;
+}
+
+.add {
+    max-width: 30%;
 }

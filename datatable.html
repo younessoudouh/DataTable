@@ -14,6 +14,68 @@
 
 <body>
     <div class="container">
+        <div class="validation-form">
+            <button class="btn-submit active add" id="add">click to Add Customer</button>
+            <div class="form-container">
+                <form id="form">
+                    <div>
+                        <input type="text" class="add-customer-input" id="first-name" placeholder="First Name">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="last-name" placeholder="Last Name">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="number" placeholder="Number" maxlength="10">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="balance" placeholder="Balance">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="rate" placeholder="Rate">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="deposit" placeholder="Deposit">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <select id="currency" class="add-customer-input">
+                            <option value="">Select currency</option>
+                            <option value="EUR">EUR</option>
+                            <option value="INR">INR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <select id="customer-status" class="add-customer-input">
+                            <option value="">Select status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <textarea class="add-customer-input" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <button class="btn-submit active" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
         <header>
             <div class="search">
                 <i class="fas fa-search"></i>
@@ -24,7 +86,7 @@
             <thead>
                 <tr>
                     <th><input type="checkbox" id="check"></th>
-                    <th class="sorting " id="name">
+                    <th class="sorting name-field" id="name">
                         name
                     </th>
                     <th> description</th>

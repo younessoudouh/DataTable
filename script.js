@@ -6,7 +6,8 @@ let customers = [{
         rate: "70.00",
         balance: "000.00",
         deposit: "560.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     },
     {
         firstName: "Alexis",
@@ -15,8 +16,9 @@ let customers = [{
         description: " employee development, or journey mapping, our professionals have the tools and",
         rate: "50.00",
         balance: "700.00",
-        deposit: "960.0",
-        status: "inactive"
+        deposit: "960.00",
+        status: "inactive",
+        currency: "INR"
     },
     {
         firstName: "Wyatt",
@@ -26,7 +28,8 @@ let customers = [{
         rate: "70.00",
         balance: "700.00",
         deposit: "960.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     },
     {
         firstName: "Leo",
@@ -36,7 +39,8 @@ let customers = [{
         rate: "60.00",
         balance: "400.00",
         deposit: "360.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     },
     {
         firstName: "Anaëlle",
@@ -46,7 +50,8 @@ let customers = [{
         rate: "60.00",
         balance: "-350.00",
         deposit: "160.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     },
     {
         firstName: "Matilda",
@@ -56,7 +61,8 @@ let customers = [{
         rate: "70.00",
         balance: "550.00",
         deposit: "500.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     },
     {
         firstName: "Pilar",
@@ -66,7 +72,8 @@ let customers = [{
         rate: "20.00",
         balance: "900.00",
         deposit: " 100.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "James",
         lastName: "Herrera",
@@ -75,7 +82,8 @@ let customers = [{
         rate: "40.00",
         balance: "-550.00",
         deposit: "709.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Storm",
         lastName: "Moller",
@@ -84,7 +92,8 @@ let customers = [{
         rate: "50.00",
         balance: "450.00",
         deposit: "200.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Monica",
         lastName: "Cruz",
@@ -93,7 +102,8 @@ let customers = [{
         rate: "50.00",
         balance: "-550.00",
         deposit: "879.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "Ryder",
         lastName: "Li",
@@ -102,7 +112,8 @@ let customers = [{
         rate: "30.00",
         balance: "-300.00",
         deposit: " 200.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Emir",
         lastName: "Hoff",
@@ -111,7 +122,8 @@ let customers = [{
         rate: "20.00",
         balance: "-550.00",
         deposit: "700.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "Emily",
         lastName: "King",
@@ -120,7 +132,8 @@ let customers = [{
         rate: "40.00",
         balance: "-200.00",
         deposit: "800.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Maximilian",
         lastName: "Lucas",
@@ -129,7 +142,8 @@ let customers = [{
         rate: "50.00",
         balance: "500.00",
         deposit: " 400.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "Vildan",
         lastName: "Tüzün",
@@ -138,7 +152,8 @@ let customers = [{
         rate: "30.00",
         balance: "-250.00",
         deposit: "780.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Klaus",
         lastName: "Roy",
@@ -147,7 +162,8 @@ let customers = [{
         rate: "40.00",
         balance: "450.00",
         deposit: "760.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Florência",
         lastName: "Souza",
@@ -156,7 +172,8 @@ let customers = [{
         rate: "45.00",
         balance: "750.00",
         deposit: "650.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "Lorraine",
         lastName: "Chambers",
@@ -165,7 +182,8 @@ let customers = [{
         rate: "55.00",
         balance: "-550.00",
         deposit: "950.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }, {
         firstName: "Brandon",
         lastName: "Byrd",
@@ -174,7 +192,8 @@ let customers = [{
         rate: "60.00",
         balance: "250.00",
         deposit: "350.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Alvin",
         lastName: "Ferguson",
@@ -183,7 +202,8 @@ let customers = [{
         rate: "30.00",
         balance: "-550.00",
         deposit: "550.00",
-        status: "inactive"
+        status: "inactive",
+        currency: "INR"
     }, {
         firstName: "Asuncion",
         lastName: "Moreno",
@@ -192,7 +212,8 @@ let customers = [{
         rate: "10.00",
         balance: "-650.00",
         deposit: "750.00",
-        status: "active"
+        status: "active",
+        currency: "INR"
     }
 ];
 
@@ -205,7 +226,17 @@ const selectElement = document.getElementById("select");
 const displayedCustomerElement = document.getElementById("displayed-customer");
 const previousPageElement = document.getElementById("prevouis-page");
 const nextPageElement = document.getElementById("next-page");
-
+const firstNameElement = document.getElementById("first-name");
+const lastNameElement = document.getElementById("last-name");
+const descriptionElement = document.getElementById("description");
+const balanceElement = document.getElementById("balance");
+const rateElement = document.getElementById("rate");
+const currencyElement = document.getElementById("currency");
+const customerStatusElement = document.getElementById("customer-status");
+const form = document.getElementById("form");
+const numberElement = document.getElementById("number");
+const depositElement = document.getElementById("deposit");
+const addCustomer = document.getElementById("add");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -213,34 +244,178 @@ let customersReadyToRender;
 
 render(customers);
 
+addCustomer.addEventListener("click", () => {
+    form.classList.toggle("show-form")
+})
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    checkInputsValidation();
+})
+
+function checkInputsValidation() {
+    let firstName = firstNameElement.value.trim() !== "" ?
+        firstNameElement.value[0].toUpperCase() + firstNameElement.value.slice(1).toLowerCase() :
+        firstNameElement.value.trim();
+    let lastName = lastNameElement.value.trim() !== "" ?
+        lastNameElement.value[0].toUpperCase() + lastNameElement.value.slice(1).toLowerCase() :
+        lastNameElement.value.trim();
+    let id = numberElement.value;
+    let description = descriptionElement.value.trim();
+    let rate = rateElement.value.trim();
+    let balance = balanceElement.value.trim();
+    let status = customerStatusElement.value;
+    let deposit = depositElement.value.trim();
+    let currency = currencyElement.value;
+    let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
+    let customerData;
+
+    if (firstName === "") {
+        setErrorForInput(firstNameElement, "first name can't be blanck");
+    } else if (!firstName.match("[a-zA-Z]+$")) {
+        setErrorForInput(firstNameElement, "string should contains only letters");
+    } else if (customers.some(customer => customer.firstName === firstName)) {
+        setErrorForInput(firstNameElement, "customer already exist");
+    } else {
+        setSuccessForInput(firstNameElement);
+    }
+
+    if (lastName === "") {
+        setErrorForInput(lastNameElement, "last name can't be blanck");
+    } else if (!lastName.match("[a-zA-Z]+$")) {
+        setErrorForInput(lastNameElement, "string should contains only letters");
+    } else {
+        setSuccessForInput(lastNameElement);
+    }
+
+    if (description === "") {
+        setErrorForInput(descriptionElement, "description can't be blanck");
+    } else if (description.length <= 10) {
+        setErrorForInput(descriptionElement, "description should at least have 10 characters");
+    } else {
+        setSuccessForInput(descriptionElement);
+    }
+
+    if (id === "") {
+        setErrorForInput(numberElement, "number can't be blanck");
+    } else if (id.length < 10 || isNaN(id)) {
+        setErrorForInput(numberElement, "number should be 10 digits");
+    } else if (customers.some(customer => customer.id == id)) {
+        setErrorForInput(numberElement, "number already exist");
+    } else {
+        setSuccessForInput(numberElement);
+    }
+
+    if (deposit === "") {
+        setErrorForInput(depositElement, "deposit can't be blanck");
+    } else if (isNaN(deposit)) {
+        setErrorForInput(depositElement, "deposit should be a number");
+    } else {
+        deposit = Number(deposit).toFixed(2)
+        setSuccessForInput(depositElement);
+    }
+
+    if (rate === "") {
+        setErrorForInput(rateElement, "rate can't be blanck");
+    } else if (isNaN(rate) || rate === "") {
+        setErrorForInput(rateElement, " rate should be  a number");
+    } else {
+        rate = Number(rate).toFixed(2)
+        setSuccessForInput(rateElement);
+    }
+
+    if (balance === "") {
+        setErrorForInput(balanceElement, "balance can't be blanck");
+    } else if (isNaN(balance) || balance === "") {
+        setErrorForInput(balanceElement, "balance should be a number");
+    } else {
+        balance = Number(balance).toFixed(2)
+        setSuccessForInput(balanceElement);
+    }
+
+    if (status === "") {
+        setErrorForInput(customerStatusElement, "should select status");
+    } else {
+        setSuccessForInput(customerStatusElement);
+    }
+
+    if (currency === "") {
+        setErrorForInput(currencyElement, "should select currency");
+    } else {
+        setSuccessForInput(currencyElement);
+    }
+
+    customerData = {
+        currency,
+        rate,
+        firstName,
+        id,
+        lastName,
+        description,
+        balance,
+        deposit,
+        status
+    };
+
+    checkInputsValiditySuccess(inputsElements, customerData)
+}
+
+function checkInputsValiditySuccess(inputsList, data) {
+    let success = inputsList.every((input) => input.classList.contains("success"));
+    if (success) {
+        customers.unshift(data);
+        inputsList.forEach(input => input.value = "");
+        customerStatusElement.selectedIndex = 0;
+        currencyElement.selectedIndex = 0;
+        render(customers);
+        inputsList.forEach((input) => {
+            input.classList.remove("success", "error");
+            //set success Icon visibility hidden
+            input.nextElementSibling.nextElementSibling.classList.remove("show")
+        });
+    }
+}
+
+function setErrorForInput(input, error) {
+    let errorField = input.nextElementSibling;
+    let successIcon = errorField.nextElementSibling;
+    input.classList.add("error");
+    input.classList.remove("success");
+    successIcon.classList.remove("show");
+    errorField.innerHTML = `<i class="fas fa-exclamation"></i> ${error}`;
+}
+
+function setSuccessForInput(input) {
+    let errorField = input.nextElementSibling;
+    let successIcon = errorField.nextElementSibling;
+    input.classList.add("success");
+    errorField.innerHTML = "";
+    successIcon.classList.add("show");
+}
+
 function render(customersToRender) {
     tableElement.innerHTML = "";
     rowsPerPage = selectElement.value;
-
     let searchedCustomers = searchCustomersByName(customersToRender);
     let sortedCustomersByStatus = sortCustomersByStatus(searchedCustomers, sortStatusOrder);
-    let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder)
+    let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
     customersReadyToRender = sortedCustomersByName;
-
     let currentCustomers = customersReadyToRender.slice((currentPage - 1) * rowsPerPage, rowsPerPage * (currentPage));
     currentCustomers.forEach(customer => {
-        const row = createElement(customer)
-        tableElement.append(row)
+        const row = createElement(customer);
+        tableElement.append(row);
     });
-
     activeCustomerElement.innerHTML = `active customers:
      <strong>${countActiveCustomers(sortedCustomersByName)}</strong> / 
      <small>${sortedCustomersByName.length}</small>`;
-
-    displayedCustomerElement.innerHTML = `${(currentPage-1)*rowsPerPage}-${(currentCustomers.length-rowsPerPage)+rowsPerPage*(currentPage)} of ${sortedCustomersByName.length}`
+    displayedCustomerElement.innerHTML = `${(currentPage-1)*rowsPerPage}-${(currentCustomers.length-rowsPerPage)+rowsPerPage*(currentPage)} of ${sortedCustomersByName.length}`;
 }
 
 function createElement(customer) {
-    let { firstName, lastName, description, rate, balance, deposit, status, id } = customer;
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customer;
     let row = document.createElement("tr");
-
     row.innerHTML = `
-    <td><input type="checkbox"  id="check"></td>
+    <td><input type="checkbox" id="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -249,31 +424,29 @@ function createElement(customer) {
         <p class="description">${description}</p>
     </td>
     <td>
-        <span class="rate-number">${rate}</span>
-        <h4 class="inr">inr</h4>
+        <h3 class="rate-number">${rate}</h3>
+        <h4 class="inr">${currency}</h4>
     </td>
     <td>
-        <span class="${checkBalance(balance)}">${balance}</span>
-        <h4 class="inr">inr</h4>
+        <h3 class="${checkBalance(balance)}">${balance}</h3>
+        <h4 class="inr">${currency}</h4>
     </td>
     <td>
-        <span class="deposite-number">${deposit}</span>
-        <h4 class="inr">inr</h4>
+        <h3 class="deposite-number">${deposit}</h3>
+        <h4 class="inr">${currency}</h4>
     </td>
     <td>
         <button class="${status} ">${status}</button>
     </td>
-    `
+    `;
     let trash = document.createElement("td");
     let trashIcon = document.createElement("i");
     trashIcon.onclick = () => {
-        customers = deleteCustomer(customers, id)
-        render(customers)
+        deleteCustomer(customers, id)
     };
-    trashIcon.classList.add("fa-trash-alt", "delet", "fas");
+    trashIcon.classList.add("fa-trash-alt", "fas");
     trash.appendChild(trashIcon);
     row.appendChild(trash);
-
     return row;
 }
 
@@ -285,16 +458,14 @@ function checkBalance(amount) {
 
 searchElement.addEventListener("keyup", () => {
     currentPage = 1;
-    rowsPerPage = selectElement.value;
-    render(customers)
+    render(customers);
 })
 
 nameElement.addEventListener("click", () => {
     if (sortStatusOrder != undefined) {
         sortStatusOrder = undefined;
-        statusElement.classList.remove("sort-desc", "sort-asc")
+        statusElement.classList.remove("sort-desc", "sort-asc");
     }
-
     if (sortNameOrder === "asc") {
         sortNameOrder = "desc";
         nameElement.classList.add("sort-desc");
@@ -305,7 +476,7 @@ nameElement.addEventListener("click", () => {
         sortNameOrder = undefined;
         nameElement.classList.remove("sort-desc", "sort-asc");
     }
-    render(customers)
+    render(customers);
 })
 
 statusElement.addEventListener("click", () => {
@@ -313,37 +484,37 @@ statusElement.addEventListener("click", () => {
         sortNameOrder = undefined;
         nameElement.classList.remove("sort-desc", "sort-asc");
     }
-
     if (sortStatusOrder === "asc") {
         sortStatusOrder = "desc";
         statusElement.classList.add("sort-desc")
     } else if (sortStatusOrder === undefined) {
         sortStatusOrder = "asc";
-        statusElement.classList.add("sort-asc")
+        statusElement.classList.add("sort-asc");
     } else {
         sortStatusOrder = undefined;
-        statusElement.classList.remove("sort-desc", "sort-asc")
+        statusElement.classList.remove("sort-desc", "sort-asc");
     }
-    render(customers)
+    render(customers);
 })
 
 function searchCustomersByName(customersToSearchIn) {
     let searchValue = searchElement.value.toLowerCase();
     let searchedCustomers = customersToSearchIn.filter(customer => {
-        return (customer.firstName.toLowerCase()).includes(searchValue) | customer.lastName.toLowerCase().includes(searchValue) || customer.description.toLowerCase().includes(searchValue);
+        return (customer.firstName.toLowerCase()).includes(searchValue) || customer.lastName.toLowerCase().includes(searchValue) || customer.description.toLowerCase().includes(searchValue);
     })
     return searchedCustomers;
 }
 
 function sortCustomersByStatus(originCustomers, sortOrder) {
-
-    if (sortOrder === "asc") return originCustomers.sort((customer1, customer2) => (customer1.status > customer2.status) ? 1 : -1);
-    if (sortOrder === "desc") return originCustomers.sort((customer1, customer2) => (customer1.status > customer2.status) ? -1 : 1);
+    let originCopyForFilter = originCustomers.slice();
+    if (sortOrder === "asc") return (originCopyForFilter.filter((customer) => customer.status === "active"))
+        .concat(originCustomers.filter((customer) => customer.status === "inactive"));
+    if (sortOrder === "desc") return (originCopyForFilter.filter((customer) => customer.status === "inactive"))
+        .concat(originCustomers.filter((customer) => customer.status === "active"));
     return originCustomers;
 }
 
 function sortCustomersByName(originCustomers, sortOrder) {
-
     if (sortOrder === "asc") return originCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
     if (sortOrder === "desc") return originCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
     return originCustomers;
@@ -351,9 +522,10 @@ function sortCustomersByName(originCustomers, sortOrder) {
 
 function deleteCustomer(originCustomers, customerId) {
     if (confirm("are you sure")) {
-        return originCustomers = originCustomers.filter(customer => {
+        customers = originCustomers.filter(customer => {
             return customer.id != customerId;
         })
+        render(customers)
     }
 }
 
@@ -364,7 +536,8 @@ function countActiveCustomers(customersToCountIn) {
 }
 
 selectElement.addEventListener("change", () => {
-    render(customers)
+    currentPage = 1;
+    render(customers);
 })
 
 nextPageElement.addEventListener("click", () => {
