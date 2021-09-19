@@ -245,7 +245,7 @@ let customersReadyToRender;
 render(customers);
 
 addCustomer.addEventListener("click", () => {
-    form.classList.toggle("show-form")
+    form.classList.toggle("show-form");
 })
 
 form.addEventListener("submit", (e) => {
@@ -269,18 +269,20 @@ function checkInputsValidation() {
     let currency = currencyElement.value;
     let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
     let customerData;
+    let isNumberExist = customers.some(customer => customer.id == id);
+    let isFirstNameExist = customers.some(customer => customer.firstName === firstName);
 
-    if (firstName === "") {
+    if (!firstName) {
         setErrorForInput(firstNameElement, "first name can't be blanck");
     } else if (!firstName.match("[a-zA-Z]+$")) {
         setErrorForInput(firstNameElement, "string should contains only letters");
-    } else if (customers.some(customer => customer.firstName === firstName)) {
+    } else if (isFirstNameExist) {
         setErrorForInput(firstNameElement, "customer already exist");
     } else {
         setSuccessForInput(firstNameElement);
     }
 
-    if (lastName === "") {
+    if (!lastName) {
         setErrorForInput(lastNameElement, "last name can't be blanck");
     } else if (!lastName.match("[a-zA-Z]+$")) {
         setErrorForInput(lastNameElement, "string should contains only letters");
@@ -288,7 +290,7 @@ function checkInputsValidation() {
         setSuccessForInput(lastNameElement);
     }
 
-    if (description === "") {
+    if (!description) {
         setErrorForInput(descriptionElement, "description can't be blanck");
     } else if (description.length <= 10) {
         setErrorForInput(descriptionElement, "description should at least have 10 characters");
@@ -296,17 +298,17 @@ function checkInputsValidation() {
         setSuccessForInput(descriptionElement);
     }
 
-    if (id === "") {
+    if (!id) {
         setErrorForInput(numberElement, "number can't be blanck");
     } else if (id.length < 10 || isNaN(id)) {
         setErrorForInput(numberElement, "number should be 10 digits");
-    } else if (customers.some(customer => customer.id == id)) {
+    } else if (isNumberExist) {
         setErrorForInput(numberElement, "number already exist");
     } else {
         setSuccessForInput(numberElement);
     }
 
-    if (deposit === "") {
+    if (!deposit) {
         setErrorForInput(depositElement, "deposit can't be blanck");
     } else if (isNaN(deposit)) {
         setErrorForInput(depositElement, "deposit should be a number");
@@ -315,31 +317,31 @@ function checkInputsValidation() {
         setSuccessForInput(depositElement);
     }
 
-    if (rate === "") {
+    if (!rate) {
         setErrorForInput(rateElement, "rate can't be blanck");
-    } else if (isNaN(rate) || rate === "") {
+    } else if (isNaN(rate)) {
         setErrorForInput(rateElement, " rate should be  a number");
     } else {
         rate = Number(rate).toFixed(2)
         setSuccessForInput(rateElement);
     }
 
-    if (balance === "") {
+    if (!balance) {
         setErrorForInput(balanceElement, "balance can't be blanck");
-    } else if (isNaN(balance) || balance === "") {
+    } else if (isNaN(balance)) {
         setErrorForInput(balanceElement, "balance should be a number");
     } else {
         balance = Number(balance).toFixed(2)
         setSuccessForInput(balanceElement);
     }
 
-    if (status === "") {
+    if (!status) {
         setErrorForInput(customerStatusElement, "should select status");
     } else {
         setSuccessForInput(customerStatusElement);
     }
 
-    if (currency === "") {
+    if (!currency) {
         setErrorForInput(currencyElement, "should select currency");
     } else {
         setSuccessForInput(currencyElement);
@@ -361,8 +363,8 @@ function checkInputsValidation() {
 }
 
 function checkInputsValiditySuccess(inputsList, data) {
-    let success = inputsList.every((input) => input.classList.contains("success"));
-    if (success) {
+    let isFormValid = inputsList.every((input) => input.classList.contains("success"));
+    if (isFormValid) {
         customers.unshift(data);
         inputsList.forEach(input => input.value = "");
         customerStatusElement.selectedIndex = 0;
@@ -371,7 +373,7 @@ function checkInputsValiditySuccess(inputsList, data) {
         inputsList.forEach((input) => {
             input.classList.remove("success", "error");
             //set success Icon visibility hidden
-            input.nextElementSibling.nextElementSibling.classList.remove("show")
+            input.nextElementSibling.nextElementSibling.classList.remove("show");
         });
     }
 }
