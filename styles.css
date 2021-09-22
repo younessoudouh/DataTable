@@ -272,6 +272,7 @@ form {
     border-radius: 15px;
     cursor: pointer;
     font-family: inherit;
+    transition: all .5s;
 }
 
 .btn-submit:hover {
@@ -322,4 +323,5 @@ form>div {
 
 .add {
     max-width: 30%;
+    transition: all .5s;
 }

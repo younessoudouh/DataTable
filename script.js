@@ -307,45 +307,11 @@ function checkInputsValidation() {
     } else {
         setSuccessForInput(numberElement);
     }
-
-    if (!deposit) {
-        setErrorForInput(depositElement, "deposit can't be blanck");
-    } else if (isNaN(deposit)) {
-        setErrorForInput(depositElement, "deposit should be a number");
-    } else {
-        deposit = Number(deposit).toFixed(2)
-        setSuccessForInput(depositElement);
-    }
-
-    if (!rate) {
-        setErrorForInput(rateElement, "rate can't be blanck");
-    } else if (isNaN(rate)) {
-        setErrorForInput(rateElement, " rate should be  a number");
-    } else {
-        rate = Number(rate).toFixed(2)
-        setSuccessForInput(rateElement);
-    }
-
-    if (!balance) {
-        setErrorForInput(balanceElement, "balance can't be blanck");
-    } else if (isNaN(balance)) {
-        setErrorForInput(balanceElement, "balance should be a number");
-    } else {
-        balance = Number(balance).toFixed(2)
-        setSuccessForInput(balanceElement);
-    }
-
-    if (!status) {
-        setErrorForInput(customerStatusElement, "should select status");
-    } else {
-        setSuccessForInput(customerStatusElement);
-    }
-
-    if (!currency) {
-        setErrorForInput(currencyElement, "should select currency");
-    } else {
-        setSuccessForInput(currencyElement);
-    }
+    isNotANumberAndHasValue(depositElement, deposit)
+    isNotANumberAndHasValue(rateElement, rate)
+    isNotANumberAndHasValue(balanceElement, balance)
+    hasValue(customerStatusElement, status, "status select currency");
+    hasValue(currencyElement, currency, "should select currency");
 
     customerData = {
         currency,
@@ -362,20 +328,46 @@ function checkInputsValidation() {
     checkInputsValiditySuccess(inputsElements, customerData)
 }
 
+function hasValue(input, inputValue, message) {
+    if (!inputValue) {
+        return setErrorForInput(input, message);
+    }
+    return setSuccessForInput(input);
+}
+
+function isNotANumberAndHasValue(input, inputValue) {
+    if (!inputValue) {
+        setErrorForInput(input, "can't be blanck");
+    } else if (isNaN(inputValue)) {
+        setErrorForInput(input, "should be  a number");
+    } else {
+        inputValue = Number(inputValue).toFixed(2)
+        setSuccessForInput(input);
+    }
+}
+
 function checkInputsValiditySuccess(inputsList, data) {
     let isFormValid = inputsList.every((input) => input.classList.contains("success"));
     if (isFormValid) {
         customers.unshift(data);
-        inputsList.forEach(input => input.value = "");
-        customerStatusElement.selectedIndex = 0;
-        currencyElement.selectedIndex = 0;
+        restInputsValue(inputsList);
+        restInputsStyle(inputsList);
         render(customers);
-        inputsList.forEach((input) => {
-            input.classList.remove("success", "error");
-            //set success Icon visibility hidden
-            input.nextElementSibling.nextElementSibling.classList.remove("show");
-        });
     }
+}
+
+function restInputsValue(inputs) {
+    inputs.forEach(input => input.value = "");
+    customerStatusElement.selectedIndex = 0;
+    currencyElement.selectedIndex = 0;
+}
+
+function restInputsStyle(inputs) {
+    inputs.forEach((input) => {
+        input.classList.remove("success", "error");
+        //set success Icon visibility hidden
+        input.nextElementSibling.nextElementSibling.classList.remove("show");
+    });
 }
 
 function setErrorForInput(input, error) {
