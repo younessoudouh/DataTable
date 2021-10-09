@@ -14,65 +14,75 @@
 
 <body>
     <div class="container">
-        <div class="validation-form">
-            <button class="btn-submit active add" id="add">click to Add Customer</button>
+        <div class="validation-form" id="validation-form">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+                <div class="percent" id="percent">Progress: 0%</div>
+            </div>
+            <div class="notification hidden" id="notification">
+                <div class="not-content">
+                    You've added a customer &nbsp; <i class="fas fa-check-double"></i>
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
             <div class="form-container">
                 <form id="form">
-                    <div>
-                        <input type="text" class="add-customer-input" id="first-name" placeholder="First Name">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <input type="text" class="add-customer-input" id="last-name" placeholder="Last Name">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <input type="text" class="add-customer-input" id="number" placeholder="Number" maxlength="10">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <input type="text" class="add-customer-input" id="balance" placeholder="Balance">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <input type="text" class="add-customer-input" id="rate" placeholder="Rate">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <input type="text" class="add-customer-input" id="deposit" placeholder="Deposit">
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <select id="currency" class="add-customer-input">
+                    <h2>Add Customer:</h3>
+                        <div>
+                            <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <input type="text" class="add-customer-input" name="last-name" id="last-name" placeholder="Last Name">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <input type="text" class="add-customer-input" name="number" id="number" placeholder="Number" maxlength="10">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <input type="text" class="add-customer-input" id="rate" name="rate" placeholder="Rate">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <input type="text" class="add-customer-input" id="deposit" name="deposit" placeholder="Deposit">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <select id="currency" name="currency" class="add-customer-input">
                             <option value="">Select currency</option>
                             <option value="EUR">EUR</option>
                             <option value="INR">INR</option>
                             <option value="USD">USD</option>
                         </select>
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <select id="customer-status" class="add-customer-input">
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <select id="customer-status" name="status" class="add-customer-input">
                             <option value="">Select status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div>
-                        <textarea class="add-customer-input" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
-                        <small></small>
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <button class="btn-submit active" type="submit">Submit</button>
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <textarea class="add-customer-input" name="description" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
+                            <small></small>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <button class="btn-submit active" type="submit">Submit</button>
                 </form>
             </div>
         </div>
@@ -81,6 +91,7 @@
                 <i class="fas fa-search"></i>
                 <input type="text" class="search-input" id="search" placeholder="Search">
             </div>
+            <button class="active add" id="add"><i class="fas fa-plus-circle"></i>Add Customer</button>
         </header>
         <table>
             <thead>
@@ -100,7 +111,6 @@
                 </tr>
             </thead>
             <tbody id="table"></tbody>
-
         </table>
         <footer>
             <div class="active-customers" id="active-clients">active customers: <strong>479</strong> / <small>706</small> </div>

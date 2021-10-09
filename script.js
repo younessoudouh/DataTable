@@ -1,4 +1,4 @@
-let customers = [{
+let clients = [{
         firstName: "Estefânio",
         lastName: "de Souza",
         id: 1290763872,
@@ -237,15 +237,64 @@ const form = document.getElementById("form");
 const numberElement = document.getElementById("number");
 const depositElement = document.getElementById("deposit");
 const addCustomer = document.getElementById("add");
+const notificationElement = document.getElementById("notification");
+const percentElement = document.getElementById("percent");
+const progressElement = document.getElementById("progress");
+const validationForm = document.getElementById("validation-form");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
+let progressValue = 0;
+let customers = JSON.parse(localStorage.getItem("customers")) ?
+    JSON.parse(localStorage.getItem("customers")) : clients;
 
 render(customers);
 
-addCustomer.addEventListener("click", () => {
-    form.classList.toggle("show-form");
+let inputsValidityStatus = {
+    [firstNameElement.name]: false,
+    [lastNameElement.name]: false,
+    [numberElement.name]: false,
+    [depositElement.name]: false,
+    [rateElement.name]: false,
+    [balanceElement.name]: false,
+    [depositElement.name]: false,
+    [currencyElement.name]: false,
+    [customerStatusElement.name]: false,
+};
+
+function showProgress(progressValue) {
+    progressElement.style.width = `${progressValue}%`;
+    percentElement.textContent = `Progress: ${progressValue} %`;
+}
+
+function upDateProgressValue(submited) {
+    if (submited) {
+        inputsValidityStatus = Object.entries(inputsValidityStatus).map(([input, isValid]) => [input, false]);
+        inputsValidityStatus = Object.fromEntries(inputsValidityStatus);
+    }
+    let ValidInputs = Object.values(inputsValidityStatus).filter((isValid) => isValid === true).length;
+    let progress = (100 / 9) * ValidInputs;
+    progress = Math.round(progress);
+    showProgress(progress);
+}
+
+function controleUpDateProgress(inputIsValid, inputName) {
+    if (inputIsValid) {
+        inputsValidityStatus[inputName] = true;
+        upDateProgressValue()
+    } else {
+        inputsValidityStatus[inputName] = false;
+        upDateProgressValue()
+    }
+}
+
+function setCustomersInLocalStorage(list) {
+    return localStorage.setItem("customers", JSON.stringify(list));
+}
+
+addCustomer.addEventListener("click", (e) => {
+    validationForm.classList.toggle("show-form");
 })
 
 form.addEventListener("submit", (e) => {
@@ -253,66 +302,122 @@ form.addEventListener("submit", (e) => {
     checkInputsValidation();
 })
 
+firstNameElement.addEventListener("input", (e) => {
+    firstNameValidity(firstNameElement);
+    let inputIsValid = firstNameValidity(firstNameElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+lastNameElement.addEventListener("input", (e) => {
+    lastNameValidity(lastNameElement);
+    let inputIsValid = lastNameValidity(lastNameElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+
+numberElement.addEventListener("input", (e) => {
+    numberValidity(numberElement);
+    let inputIsValid = numberValidity(numberElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+rateElement.addEventListener("input", (e) => {
+    ratetValidity(rateElement);
+    let inputIsValid = ratetValidity(rateElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+
+balanceElement.addEventListener("input", (e) => {
+    balanceValidity(balanceElement);
+    let inputIsValid = balanceValidity(balanceElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+customerStatusElement.addEventListener("input", (e) => {
+    statusValidity(customerStatusElement);
+    let inputIsValid = statusValidity(customerStatusElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+
+descriptionElement.addEventListener("input", (e) => {
+    descriptionValidity(descriptionElement);
+    let inputIsValid = descriptionValidity(descriptionElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+
+depositElement.addEventListener("input", (e) => {
+    depositValidity(depositElement);
+    let inputIsValid = depositValidity(depositElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+currencyElement.addEventListener("input", (e) => {
+    currencyValidity(currencyElement);
+    let inputIsValid = currencyValidity(currencyElement);
+    let inputName = e.target.name;
+    controleUpDateProgress(inputIsValid, inputName);
+})
+
+firstNameElement.addEventListener("blur", (e) => {
+    if (!e.target.value) firstNameValidity(firstNameElement);
+})
+lastNameElement.addEventListener("blur", (e) => {
+    if (!e.target.value) lastNameValidity(lastNameElement);
+})
+
+numberElement.addEventListener("blur", (e) => {
+    if (!e.target.value) numberValidity(numberElement);
+})
+rateElement.addEventListener("blur", (e) => {
+    if (!e.target.value) ratetValidity(rateElement);
+})
+
+balanceElement.addEventListener("blur", (e) => {
+    if (!e.target.value) balanceValidity(balanceElement);
+})
+customerStatusElement.addEventListener("blur", (e) => {
+    if (!e.target.value) statusValidity(customerStatusElement);
+})
+
+descriptionElement.addEventListener("blur", (e) => {
+    if (!e.target.value) descriptionValidity(descriptionElement);
+})
+
+depositElement.addEventListener("blur", (e) => {
+    if (!e.target.value) depositValidity(depositElement);
+})
+currencyElement.addEventListener("blur", (e) => {
+    if (!e.target.value) currencyValidity(currencyElement);
+})
+
 function checkInputsValidation() {
     let firstName = firstNameElement.value.trim() !== "" ?
         firstNameElement.value[0].toUpperCase() + firstNameElement.value.slice(1).toLowerCase() :
-        firstNameElement.value.trim();
+        firstNameElement.value;
     let lastName = lastNameElement.value.trim() !== "" ?
         lastNameElement.value[0].toUpperCase() + lastNameElement.value.slice(1).toLowerCase() :
-        lastNameElement.value.trim();
+        lastNameElement.value;
     let id = numberElement.value;
-    let description = descriptionElement.value.trim();
-    let rate = rateElement.value.trim();
-    let balance = balanceElement.value.trim();
+    let description = descriptionElement.value;
+    let rate = rateElement.value;
+    let balance = balanceElement.value;
     let status = customerStatusElement.value;
-    let deposit = depositElement.value.trim();
+    let deposit = depositElement.value;
     let currency = currencyElement.value;
     let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
     let customerData;
-    let isNumberExist = customers.some(customer => customer.id == id);
-    let isFirstNameExist = customers.some(customer => customer.firstName === firstName);
-
-    if (!firstName) {
-        setErrorForInput(firstNameElement, "first name can't be blanck");
-    } else if (!firstName.match("[a-zA-Z]+$")) {
-        setErrorForInput(firstNameElement, "string should contains only letters");
-    } else if (isFirstNameExist) {
-        setErrorForInput(firstNameElement, "customer already exist");
-    } else {
-        setSuccessForInput(firstNameElement);
-    }
-
-    if (!lastName) {
-        setErrorForInput(lastNameElement, "last name can't be blanck");
-    } else if (!lastName.match("[a-zA-Z]+$")) {
-        setErrorForInput(lastNameElement, "string should contains only letters");
-    } else {
-        setSuccessForInput(lastNameElement);
-    }
-
-    if (!description) {
-        setErrorForInput(descriptionElement, "description can't be blanck");
-    } else if (description.length <= 10) {
-        setErrorForInput(descriptionElement, "description should at least have 10 characters");
-    } else {
-        setSuccessForInput(descriptionElement);
-    }
-
-    if (!id) {
-        setErrorForInput(numberElement, "number can't be blanck");
-    } else if (id.length < 10 || isNaN(id)) {
-        setErrorForInput(numberElement, "number should be 10 digits");
-    } else if (isNumberExist) {
-        setErrorForInput(numberElement, "number already exist");
-    } else {
-        setSuccessForInput(numberElement);
-    }
-    isNotANumberAndHasValue(depositElement, deposit)
-    isNotANumberAndHasValue(rateElement, rate)
-    isNotANumberAndHasValue(balanceElement, balance)
-    hasValue(customerStatusElement, status, "status select currency");
-    hasValue(currencyElement, currency, "should select currency");
-
+    firstNameValidity(firstNameElement);
+    lastNameValidity(lastNameElement);
+    descriptionValidity(descriptionElement);
+    statusValidity(customerStatusElement);
+    currencyValidity(currencyElement);
+    numberValidity(numberElement);
+    depositValidity(depositElement);
+    ratetValidity(rateElement);
+    balanceValidity(balanceElement);
     customerData = {
         currency,
         rate,
@@ -324,35 +429,175 @@ function checkInputsValidation() {
         deposit,
         status
     };
-
     checkInputsValiditySuccess(inputsElements, customerData)
 }
 
-function hasValue(input, inputValue, message) {
-    if (!inputValue) {
-        return setErrorForInput(input, message);
+function firstNameValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
+        return false;
+    } else if (isFirstNameExist(input)) {
+        return false;
+    } else {
+        return true
     }
-    return setSuccessForInput(input);
 }
 
-function isNotANumberAndHasValue(input, inputValue) {
-    if (!inputValue) {
-        setErrorForInput(input, "can't be blanck");
-    } else if (isNaN(inputValue)) {
-        setErrorForInput(input, "should be  a number");
-    } else {
-        inputValue = Number(inputValue).toFixed(2)
-        setSuccessForInput(input);
+function numberValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (isNumber(input)) {
+        return false
+    } else if (validLength(input)) {
+        return false;
+    } else if (isNumberExist(input)) {
+        return false;
     }
+    return true;
+}
+
+function statusValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    }
+    return true;
+}
+
+function depositValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (isNumber(input)) {
+        return false;
+    }
+    return true;
+}
+
+function ratetValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (isNumber(input)) {
+        return false;
+    }
+    return true;
+}
+
+function balanceValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (isNumber(input)) {
+        return false;
+    }
+    return true;
+}
+
+function currencyValidity(input) {
+    if (hasValue(input)) {
+        setErrorForInput(input, `should select ${input.name}`);
+        return false;
+    }
+    setSuccessForInput(input);
+    return true;
+}
+
+function descriptionValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (validLength(input)) {
+        return false;
+    }
+    return true
+}
+
+function lastNameValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
+        return false;
+    } else {
+        return true
+    }
+}
+
+function hasValue(input) {
+    if (!input.value.trim()) {
+        setErrorForInput(input, `${input.name} can't be blanck`);
+        return true;
+    }
+    setSuccessForInput(input)
+    return false;
+}
+
+function validLength(input) {
+    if (input.value.length < 10) {
+        if (input.name === "number") {
+            setErrorForInput(input, `${input.name} should be 10 digits`);
+        } else {
+            setErrorForInput(input, `${input.name} should at least have 10 characters`);
+        }
+        return true;
+    }
+    setSuccessForInput(input);
+    return false;
+}
+
+function isNumberExist(input) {
+    let isExist = customers.some(customer => customer.id == input.value);
+    if (isExist) {
+        setErrorForInput(input, `${input.name} already exist`);
+        return true;
+    }
+    setSuccessForInput(input)
+    return false;
+}
+
+function isFirstNameExist(input) {
+    let isExist = customers.some(customer => customer.firstName.toLowerCase() === input.value.toLowerCase());
+    if (isExist) {
+        setErrorForInput(input, `${input.name} already exist`);
+        return true;
+    }
+    setSuccessForInput(input);
+    return false;
+}
+
+function isNumber(input) {
+    if (isNaN(input.value)) {
+        setErrorForInput(input, `${input.name} should be numbers`);
+        return true
+    }
+    setSuccessForInput(input);
+    return false
+}
+
+function checkOnlyLetters(input, regx) {
+    if (input.value.match(regx) === null) {
+        setErrorForInput(input, `${input.name} should contains only letters`);
+        return true;
+    }
+    setSuccessForInput(input)
+    return false;
 }
 
 function checkInputsValiditySuccess(inputsList, data) {
-    let isFormValid = inputsList.every((input) => input.classList.contains("success"));
-    if (isFormValid) {
+    if (
+        firstNameValidity(firstNameElement) &&
+        lastNameValidity(lastNameElement) &&
+        descriptionValidity(descriptionElement) &&
+        statusValidity(customerStatusElement) &&
+        currencyValidity(currencyElement) &&
+        numberValidity(numberElement) &&
+        depositValidity(depositElement) &&
+        ratetValidity(rateElement) &&
+        balanceValidity(balanceElement)
+    ) {
         customers.unshift(data);
+        setCustomersInLocalStorage(customers);
         restInputsValue(inputsList);
         restInputsStyle(inputsList);
         render(customers);
+        showNotification();
+        upDateProgressValue(true);
     }
 }
 
@@ -370,9 +615,18 @@ function restInputsStyle(inputs) {
     });
 }
 
+function showNotification() {
+    notificationElement.classList.remove("hidden");
+    notificationElement.classList.add("animation-drop");
+    setTimeout(() => {
+        notificationElement.classList.add("hidden");
+        notificationElement.classList.remove("animation-drop");
+    }, 5000)
+}
+
 function setErrorForInput(input, error) {
     let errorField = input.nextElementSibling;
-    let successIcon = errorField.nextElementSibling;
+    let successIcon = input.parentNode.lastElementChild;
     input.classList.add("error");
     input.classList.remove("success");
     successIcon.classList.remove("show");
@@ -409,7 +663,7 @@ function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customer;
     let row = document.createElement("tr");
     row.innerHTML = `
-    <td><input type="checkbox" id="check"></td>
+    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(event)" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -432,16 +686,41 @@ function createElement(customer) {
     <td>
         <button class="${status} ">${status}</button>
     </td>
+     <td>
+        <div class="flex">
+            <i class="fas fa-pen" onClick="editCustomer()"></i>
+            <i class="far fa-trash-alt" onClick="deleteCustomer(customers,${id})"></i>
+            <i class="fas fa-ellipsis-h" onClick="showOptions(event)"></i>
+            <i class="far fa-times-circle hide hidden" onClick="hideOptions(event)"></i>
+            <div class="options hidden">
+                <small class="option">View</small>
+                <small class="option">Status</small>
+                <small class="option" >Print</small>
+            </div>
+        </div>
+    </td>
     `;
-    let trash = document.createElement("td");
-    let trashIcon = document.createElement("i");
-    trashIcon.onclick = () => {
-        deleteCustomer(customers, id)
-    };
-    trashIcon.classList.add("fa-trash-alt", "fas");
-    trash.appendChild(trashIcon);
-    row.appendChild(trash);
     return row;
+}
+
+function showOptions(event) {
+    event.target.classList.add("hidden");
+    event.target.nextElementSibling.classList.remove("hidden");
+    event.target.nextElementSibling.nextElementSibling.classList.remove("hidden");
+}
+
+function hideOptions(event) {
+    event.target.nextElementSibling.classList.add("hidden");
+    event.target.previousElementSibling.classList.remove("hidden");
+    event.target.classList.add("hidden");
+}
+
+function editCustomer() {
+    alert("enter new data")
+}
+
+function changeStyleForSelectedCustomer(event) {
+    event.target.parentNode.parentNode.classList.toggle("selected")
 }
 
 function checkBalance(amount) {
@@ -519,7 +798,8 @@ function deleteCustomer(originCustomers, customerId) {
         customers = originCustomers.filter(customer => {
             return customer.id != customerId;
         })
-        render(customers)
+        render(customers);
+        setCustomersInLocalStorage(customers);
     }
 }
 
