@@ -246,8 +246,16 @@ let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
 let progressValue = 0;
+
+function setCustomersInLocalStorageAtOnce(list) {
+    if (JSON.parse(localStorage.getItem("customers")) === null) {
+        return localStorage.setItem("customers", JSON.stringify(list));
+    }
+}
+setCustomersInLocalStorageAtOnce(clients)
+
 let customers = JSON.parse(localStorage.getItem("customers")) ?
-    JSON.parse(localStorage.getItem("customers")) : clients;
+    JSON.parse(localStorage.getItem("customers")) : [];
 
 render(customers);
 
