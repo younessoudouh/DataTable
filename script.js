@@ -241,132 +241,164 @@ const notificationElement = document.getElementById("notification");
 const percentElement = document.getElementById("percent");
 const progressElement = document.getElementById("progress");
 const validationForm = document.getElementById("validation-form");
+const submitBtn = document.getElementById("submit");
+const updateBtn = document.getElementById("update");
+const formHeaderElement = document.getElementById("form-header");
+const btnGroupElement = document.getElementById("btn-group");
+const cancelBtn = document.getElementById("cancel");
+console.log(btnGroupElement)
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
-let progressValue = 0;
+let tableRowElement;
+let customerToUpdate;
+let customerToUpdateIndex;
 
-function setCustomersInLocalStorageAtOnce(list) {
+let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
+
+function countValidInputs(inputs) {
+    return inputs.filter(input => {
+        return input.classList.contains("success");
+    }).length;
+}
+
+function setCustomersInLocalStorageOnce(originalCustomesList) {
     if (JSON.parse(localStorage.getItem("customers")) === null) {
-        return localStorage.setItem("customers", JSON.stringify(list));
+        return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
     }
 }
-setCustomersInLocalStorageAtOnce(clients)
+setCustomersInLocalStorageOnce(clients)
 
 let customers = JSON.parse(localStorage.getItem("customers")) ?
     JSON.parse(localStorage.getItem("customers")) : [];
 
 render(customers);
 
-let inputsValidityStatus = {
-    [firstNameElement.name]: false,
-    [lastNameElement.name]: false,
-    [numberElement.name]: false,
-    [depositElement.name]: false,
-    [rateElement.name]: false,
-    [balanceElement.name]: false,
-    [depositElement.name]: false,
-    [currencyElement.name]: false,
-    [customerStatusElement.name]: false,
-};
-
 function showProgress(progressValue) {
     progressElement.style.width = `${progressValue}%`;
     percentElement.textContent = `Progress: ${progressValue} %`;
 }
 
-function upDateProgressValue(submited) {
-    if (submited) {
-        inputsValidityStatus = Object.entries(inputsValidityStatus).map(([input, isValid]) => [input, false]);
-        inputsValidityStatus = Object.fromEntries(inputsValidityStatus);
-    }
-    let ValidInputs = Object.values(inputsValidityStatus).filter((isValid) => isValid === true).length;
-    let progress = (100 / 9) * ValidInputs;
+function upDateProgressValue(validInputs) {
+    let progress = (100 / 9) * validInputs;
     progress = Math.round(progress);
     showProgress(progress);
 }
 
-function controleUpDateProgress(inputIsValid, inputName) {
-    if (inputIsValid) {
-        inputsValidityStatus[inputName] = true;
-        upDateProgressValue()
-    } else {
-        inputsValidityStatus[inputName] = false;
-        upDateProgressValue()
-    }
+
+function setCustomersInLocalStorage(originalCustomesList) {
+    return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
 }
 
-function setCustomersInLocalStorage(list) {
-    return localStorage.setItem("customers", JSON.stringify(list));
+updateBtn.addEventListener("click", () => {
+    let customerData = getCustomerDataFromUser();
+    let isAllInputsValid = isInputsValiditySuccess(inputsElements);
+    if (isAllInputsValid) {
+        updateTable(inputsElements, customerData, customerToUpdateIndex, "update")
+        submitBtn.classList.remove("hide-btn");
+        btnGroupElement.classList.remove("btn-group");
+        formHeaderElement.innerText = "Add Customer";
+    }
+
+})
+
+cancelBtn.addEventListener("click", () => {
+    let customerData = getCustomerDataFromUser();
+    updateTable(inputsElements, customerData, customerToUpdateIndex, "cancel updating");
+    submitBtn.classList.remove("hide-btn");
+    btnGroupElement.classList.remove("btn-group");
+    formHeaderElement.innerText = "Add Customer";
+})
+
+function getCustomerDataFromUser() {
+    let firstName = firstNameElement.value.trim() !== "" ?
+        firstNameElement.value[0].toUpperCase() + firstNameElement.value.slice(1).toLowerCase() :
+        firstNameElement.value;
+    let lastName = lastNameElement.value.trim() !== "" ?
+        lastNameElement.value[0].toUpperCase() + lastNameElement.value.slice(1).toLowerCase() :
+        lastNameElement.value;
+    let id = numberElement.value;
+    let description = descriptionElement.value;
+    let rate = rateElement.value;
+    let balance = balanceElement.value;
+    let status = customerStatusElement.value;
+    let deposit = depositElement.value;
+    let currency = currencyElement.value;
+    return {
+        currency,
+        rate,
+        firstName,
+        id,
+        lastName,
+        description,
+        balance,
+        deposit,
+        status
+    };
 }
 
 addCustomer.addEventListener("click", (e) => {
-    validationForm.classList.toggle("show-form");
+    form.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    firstNameElement.focus();
 })
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     checkInputsValidation();
+    let customerData = getCustomerDataFromUser();
+    let isAllInputsValid = isInputsValiditySuccess(inputsElements);
+    if (isAllInputsValid) updateTable(inputsElements, customerData, 0, "Add");
+
 })
+
+function showUpHiglightedcustomer(customerField) {
+    if (customerField !== null) {
+        customerField.scrollIntoView();
+        customerField.classList.add("highlight");
+        setTimeout(() => {
+            customerField.classList.remove("highlight");
+        }, 3000)
+    }
+}
 
 firstNameElement.addEventListener("input", (e) => {
     firstNameValidity(firstNameElement);
-    let inputIsValid = firstNameValidity(firstNameElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 lastNameElement.addEventListener("input", (e) => {
     lastNameValidity(lastNameElement);
-    let inputIsValid = lastNameValidity(lastNameElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 
 numberElement.addEventListener("input", (e) => {
     numberValidity(numberElement);
-    let inputIsValid = numberValidity(numberElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 rateElement.addEventListener("input", (e) => {
     ratetValidity(rateElement);
-    let inputIsValid = ratetValidity(rateElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
 })
 
 balanceElement.addEventListener("input", (e) => {
     balanceValidity(balanceElement);
-    let inputIsValid = balanceValidity(balanceElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
 })
 customerStatusElement.addEventListener("input", (e) => {
     statusValidity(customerStatusElement);
-    let inputIsValid = statusValidity(customerStatusElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 
 descriptionElement.addEventListener("input", (e) => {
     descriptionValidity(descriptionElement);
-    let inputIsValid = descriptionValidity(descriptionElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 
 depositElement.addEventListener("input", (e) => {
     depositValidity(depositElement);
-    let inputIsValid = depositValidity(depositElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 currencyElement.addEventListener("input", (e) => {
     currencyValidity(currencyElement);
-    let inputIsValid = currencyValidity(currencyElement);
-    let inputName = e.target.name;
-    controleUpDateProgress(inputIsValid, inputName);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 
 firstNameElement.addEventListener("blur", (e) => {
@@ -402,21 +434,6 @@ currencyElement.addEventListener("blur", (e) => {
 })
 
 function checkInputsValidation() {
-    let firstName = firstNameElement.value.trim() !== "" ?
-        firstNameElement.value[0].toUpperCase() + firstNameElement.value.slice(1).toLowerCase() :
-        firstNameElement.value;
-    let lastName = lastNameElement.value.trim() !== "" ?
-        lastNameElement.value[0].toUpperCase() + lastNameElement.value.slice(1).toLowerCase() :
-        lastNameElement.value;
-    let id = numberElement.value;
-    let description = descriptionElement.value;
-    let rate = rateElement.value;
-    let balance = balanceElement.value;
-    let status = customerStatusElement.value;
-    let deposit = depositElement.value;
-    let currency = currencyElement.value;
-    let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
-    let customerData;
     firstNameValidity(firstNameElement);
     lastNameValidity(lastNameElement);
     descriptionValidity(descriptionElement);
@@ -426,18 +443,6 @@ function checkInputsValidation() {
     depositValidity(depositElement);
     ratetValidity(rateElement);
     balanceValidity(balanceElement);
-    customerData = {
-        currency,
-        rate,
-        firstName,
-        id,
-        lastName,
-        description,
-        balance,
-        deposit,
-        status
-    };
-    checkInputsValiditySuccess(inputsElements, customerData)
 }
 
 function firstNameValidity(input) {
@@ -587,26 +592,26 @@ function checkOnlyLetters(input, regx) {
     return false;
 }
 
-function checkInputsValiditySuccess(inputsList, data) {
-    if (
-        firstNameValidity(firstNameElement) &&
-        lastNameValidity(lastNameElement) &&
-        descriptionValidity(descriptionElement) &&
-        statusValidity(customerStatusElement) &&
-        currencyValidity(currencyElement) &&
-        numberValidity(numberElement) &&
-        depositValidity(depositElement) &&
-        ratetValidity(rateElement) &&
-        balanceValidity(balanceElement)
-    ) {
-        customers.unshift(data);
-        setCustomersInLocalStorage(customers);
-        restInputsValue(inputsList);
-        restInputsStyle(inputsList);
-        render(customers);
-        showNotification();
-        upDateProgressValue(true);
-    }
+function isInputsValiditySuccess(inputsList) {
+    return inputsList.every(input => {
+        return input.classList.contains("success");
+    })
+}
+
+function updateTable(inputsList, customerDataFromUser, index, message) {
+    spliceDataInOriginalList(customers, index, customerDataFromUser)
+    setCustomersInLocalStorage(customers);
+    restInputsValue(inputsList);
+    restInputsStyle(inputsList);
+    render(customers);
+    tableRowElement = document.getElementById(customerDataFromUser.firstName);
+    showUpHiglightedcustomer(tableRowElement);
+    showNotification(notificationElement, customerDataFromUser.firstName, message);
+    upDateProgressValue(countValidInputs(inputsList));
+}
+
+function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser) {
+    originalCustomesList.splice(customerIndex, 0, customerDataFromUser)
 }
 
 function restInputsValue(inputs) {
@@ -623,12 +628,14 @@ function restInputsStyle(inputs) {
     });
 }
 
-function showNotification() {
-    notificationElement.classList.remove("hidden");
-    notificationElement.classList.add("animation-drop");
+function showNotification(notification, customerName, message) {
+    notification.firstElementChild.innerHTML = `You've ${message} ${customerName} successfully&nbsp; <i class="fas fa-check-double"></i>
+    <i class="fas fa-times"></i>`
+    notification.classList.remove("hidden");
+    notification.classList.add("animation-drop");
     setTimeout(() => {
-        notificationElement.classList.add("hidden");
-        notificationElement.classList.remove("animation-drop");
+        notification.classList.add("hidden");
+        notification.classList.remove("animation-drop");
     }, 5000)
 }
 
@@ -670,6 +677,8 @@ function render(customersToRender) {
 function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customer;
     let row = document.createElement("tr");
+    row.setAttribute("id", firstName);
+
     row.innerHTML = `
     <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(event)" class="check"></td>
     <td>
@@ -696,7 +705,7 @@ function createElement(customer) {
     </td>
      <td>
         <div class="flex">
-            <i class="fas fa-pen" onClick="editCustomer()"></i>
+            <i class="fas fa-pen" onClick="updateCustomer(customers,${id})"></i>
             <i class="far fa-trash-alt" onClick="deleteCustomer(customers,${id})"></i>
             <i class="fas fa-ellipsis-h" onClick="showOptions(event)"></i>
             <i class="far fa-times-circle hide hidden" onClick="hideOptions(event)"></i>
@@ -723,8 +732,27 @@ function hideOptions(event) {
     event.target.classList.add("hidden");
 }
 
-function editCustomer() {
-    alert("enter new data")
+function updateCustomer(originalCustomesList, customerId) {
+    customerToUpdate = originalCustomesList.filter(customer => customer.id == customerId)[0];
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
+
+    form.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    formHeaderElement.innerText = "Update Customer";
+    submitBtn.classList.add("hide-btn");
+    btnGroupElement.classList.add("btn-group");
+    customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
+    originalCustomesList.splice(customerToUpdateIndex, 1);
+    firstNameElement.value = firstName;
+    lastNameElement.value = lastName;
+    numberElement.value = id;
+    balanceElement.value = balance;
+    rateElement.value = rate;
+    depositElement.value = deposit;
+    currencyElement.value = currency;
+    customerStatusElement.value = status;
+    descriptionElement.value = description;
+    checkInputsValidation();
+    upDateProgressValue(countValidInputs(inputsElements));
 }
 
 function changeStyleForSelectedCustomer(event) {

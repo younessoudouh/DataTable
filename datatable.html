@@ -20,14 +20,11 @@
                 <div class="percent" id="percent">Progress: 0%</div>
             </div>
             <div class="notification hidden" id="notification">
-                <div class="not-content">
-                    You've added a customer &nbsp; <i class="fas fa-check-double"></i>
-                    <i class="fas fa-times"></i>
-                </div>
+                <div class="not-content"></div>
             </div>
             <div class="form-container">
                 <form id="form">
-                    <h2>Add Customer:</h3>
+                    <h2 id="form-header">Add Customer</h3>
                         <div>
                             <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
                             <small></small>
@@ -82,7 +79,11 @@
                             <small></small>
                             <i class="fas fa-check-circle"></i>
                         </div>
-                        <button class="btn-submit active" type="submit">Submit</button>
+                        <button class="btn-submit-update show-btn active" id="submit" type="submit">Submit</button>
+                        <div class="hide-btn" id="btn-group">
+                            <button class="btn-submit-update active" id="update" type="button">update</button>
+                            <button class="btn-submit-update active" id="cancel" type="button">Cancel</button>
+                        </div>
                 </form>
             </div>
         </div>
@@ -91,7 +92,7 @@
                 <i class="fas fa-search"></i>
                 <input type="text" class="search-input" id="search" placeholder="Search">
             </div>
-            <button class="active add" id="add"><i class="fas fa-plus-circle"></i>Add Customer</button>
+            <button class="active add" id="add"><i class="fas fa-plus-circle"></i> <a href="#">Add Customer</a></button>
         </header>
         <table>
             <thead>
