@@ -14,83 +14,120 @@
 
 <body>
     <div class="container">
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+            <div class="percent" id="percent">Progress: 0%</div>
+        </div>
         <div class="validation-form" id="validation-form">
-            <div class="progress-bar">
-                <div class="progress" id="progress"></div>
-                <div class="percent" id="percent">Progress: 0%</div>
-            </div>
             <div class="notification hidden" id="notification">
                 <div class="not-content"></div>
             </div>
             <div class="form-container">
                 <form id="form">
-                    <h2 id="form-header">Add Customer</h3>
-                        <div>
-                            <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <input type="text" class="add-customer-input" name="last-name" id="last-name" placeholder="Last Name">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <input type="text" class="add-customer-input" name="number" id="number" placeholder="Number" maxlength="10">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <input type="text" class="add-customer-input" id="rate" name="rate" placeholder="Rate">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <input type="text" class="add-customer-input" id="deposit" name="deposit" placeholder="Deposit">
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <select id="currency" name="currency" class="add-customer-input">
+                    <h2 id="form-header">Add Customer</h2>
+                    <div>
+                        <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" name="last-name" id="last-name" placeholder="Last Name">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" name="number" id="number" placeholder="Number" maxlength="10">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="rate" name="rate" placeholder="Rate">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <input type="text" class="add-customer-input" id="deposit" name="deposit" placeholder="Deposit">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <select id="currency" name="currency" class="add-customer-input">
                             <option value="">Select currency</option>
                             <option value="EUR">EUR</option>
                             <option value="INR">INR</option>
                             <option value="USD">USD</option>
                         </select>
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <select id="customer-status" name="status" class="add-customer-input">
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <select id="customer-status" name="status" class="add-customer-input">
                             <option value="">Select status</option>
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div>
-                            <textarea class="add-customer-input" name="description" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
-                            <small></small>
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <button class="btn-submit-update show-btn active" id="submit" type="submit">Submit</button>
-                        <div class="hide-btn" id="btn-group">
-                            <button class="btn-submit-update active" id="update" type="button">update</button>
-                            <button class="btn-submit-update active" id="cancel" type="button">Cancel</button>
-                        </div>
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <textarea class="add-customer-input" name="description" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
+                        <small></small>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <button class="btn-submit-update show-btn active" id="submit" type="submit">Submit</button>
+                    <div class="hide-btn" id="btn-group">
+                        <button class="btn-submit-update active" id="update" type="button">update</button>
+                        <button class="btn-submit-update active" id="cancel" type="button">Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
         <header>
-            <div class="search">
-                <i class="fas fa-search"></i>
-                <input type="text" class="search-input" id="search" placeholder="Search">
+            <div class="filter-side">
+                <div class="filter" id="filter">
+                    <img src="images/Filter.png" alt="filter">
+                    <div class="sort hide-btn" id="sort-module">
+                        <div class="sort-by-name">
+                            <h3 class="sort-head">sort by:</h3>
+                            <div class="option-sort option">
+                                <label for="sort-default">Default</label>
+                                <input type="radio" name="op" id="sort-default" checked>
+                            </div>
+                            <div class="option-sort option">
+                                <label for="sort-first-name">First Name</label>
+                                <input type="radio" name="op" id="sort-first-name">
+                            </div>
+                            <div class="option-sort option">
+                                <label for="sort-last-name">Last Name</label>
+                                <input type="radio" name="op" id="sort-last-name">
+                            </div>
+                        </div>
+                        <div class="sort-by-status">
+                            <h3 class="sort-head">Users:</h3>
+                            <div class="option-sort option">
+                                <label for="sort-All">All</label>
+                                <input type="radio" name="user" id="sort-All" checked>
+                            </div>
+                            <div class="option-sort option">
+                                <label for="sort-Active">Active</label>
+                                <input type="radio" name="user" id="sort-Active">
+                            </div>
+                            <div class="option-sort option">
+                                <label for="sort-inactive">Inactive</label>
+                                <input type="radio" name="user" id="sort-inactive">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="search-input" id="search" placeholder="Search">
+                </div>
             </div>
             <button class="active add" id="add"><i class="fas fa-plus-circle"></i> <a href="#">Add Customer</a></button>
         </header>

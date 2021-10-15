@@ -246,7 +246,8 @@ const updateBtn = document.getElementById("update");
 const formHeaderElement = document.getElementById("form-header");
 const btnGroupElement = document.getElementById("btn-group");
 const cancelBtn = document.getElementById("cancel");
-console.log(btnGroupElement)
+const filterElement = document.getElementById("filter");
+const sortModuleElement = document.getElementById("sort-module");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -291,11 +292,20 @@ function setCustomersInLocalStorage(originalCustomesList) {
     return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
 }
 
+filterElement.addEventListener("click", () => {
+    sortModuleElement.classList.toggle("hide-btn");
+    sortModuleElement.scrollIntoView();
+})
+
+sortModuleElement.addEventListener("mouseleave", () => {
+    sortModuleElement.classList.add("hide-btn");
+})
+
 updateBtn.addEventListener("click", () => {
     let customerData = getCustomerDataFromUser();
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
-        updateTable(inputsElements, customerData, customerToUpdateIndex, "update")
+        updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
         submitBtn.classList.remove("hide-btn");
         btnGroupElement.classList.remove("btn-group");
         formHeaderElement.innerText = "Add Customer";
@@ -304,8 +314,15 @@ updateBtn.addEventListener("click", () => {
 })
 
 cancelBtn.addEventListener("click", () => {
-    let customerData = getCustomerDataFromUser();
-    updateTable(inputsElements, customerData, customerToUpdateIndex, "cancel updating");
+    restInputsValue(inputsElements);
+    restInputsStyle(inputsElements);
+    tableRowElement = document.getElementById(customerToUpdate[0].firstName);
+    showUpHiglightedcustomer(tableRowElement);
+    showNotification(notificationElement, customerToUpdate[0].firstName, "canceled update");
+    upDateProgressValue(countValidInputs(inputsElements));
+    submitBtn.classList.remove("hide-btn");
+    btnGroupElement.classList.remove("btn-group");
+    formHeaderElement.innerText = "Add Customer";
     submitBtn.classList.remove("hide-btn");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
@@ -338,14 +355,22 @@ function getCustomerDataFromUser() {
     };
 }
 
-addCustomer.addEventListener("click", (e) => {
-    form.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+addCustomer.addEventListener("click", () => {
+    restInputsValue(inputsElements);
+    restInputsStyle(inputsElements);
+    submitBtn.classList.remove("hide-btn");
+    btnGroupElement.classList.remove("btn-group");
+    formHeaderElement.innerText = "Add Customer";
+    submitBtn.classList.remove("hide-btn");
+    btnGroupElement.classList.remove("btn-group");
+    formHeaderElement.innerText = "Add Customer";
+    form.scrollIntoView();
     firstNameElement.focus();
 })
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
-    checkInputsValidation();
+    checkInputsValidation(customers);
     let customerData = getCustomerDataFromUser();
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) updateTable(inputsElements, customerData, 0, "Add");
@@ -353,6 +378,7 @@ form.addEventListener("submit", (e) => {
 })
 
 function showUpHiglightedcustomer(customerField) {
+    console.log(customerField)
     if (customerField !== null) {
         customerField.scrollIntoView();
         customerField.classList.add("highlight");
@@ -362,54 +388,56 @@ function showUpHiglightedcustomer(customerField) {
     }
 }
 
-firstNameElement.addEventListener("input", (e) => {
-    firstNameValidity(firstNameElement);
+firstNameElement.addEventListener("input", () => {
+    firstNameValidity(firstNameElement, customers);
     upDateProgressValue(countValidInputs(inputsElements))
 })
-lastNameElement.addEventListener("input", (e) => {
+lastNameElement.addEventListener("input", () => {
     lastNameValidity(lastNameElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
 
-numberElement.addEventListener("input", (e) => {
-    numberValidity(numberElement);
+numberElement.addEventListener("input", () => {
+    numberValidity(numberElement, customers);
     upDateProgressValue(countValidInputs(inputsElements))
 })
-rateElement.addEventListener("input", (e) => {
+rateElement.addEventListener("input", () => {
     ratetValidity(rateElement);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
 
-balanceElement.addEventListener("input", (e) => {
+balanceElement.addEventListener("input", () => {
     balanceValidity(balanceElement);
+    upDateProgressValue(countValidInputs(inputsElements))
 })
-customerStatusElement.addEventListener("input", (e) => {
+customerStatusElement.addEventListener("input", () => {
     statusValidity(customerStatusElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
 
-descriptionElement.addEventListener("input", (e) => {
+descriptionElement.addEventListener("input", () => {
     descriptionValidity(descriptionElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
 
-depositElement.addEventListener("input", (e) => {
+depositElement.addEventListener("input", () => {
     depositValidity(depositElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
-currencyElement.addEventListener("input", (e) => {
+currencyElement.addEventListener("input", () => {
     currencyValidity(currencyElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
 
 firstNameElement.addEventListener("blur", (e) => {
-    if (!e.target.value) firstNameValidity(firstNameElement);
+    if (!e.target.value) firstNameValidity(firstNameElement, customers);
 })
 lastNameElement.addEventListener("blur", (e) => {
     if (!e.target.value) lastNameValidity(lastNameElement);
 })
 
 numberElement.addEventListener("blur", (e) => {
-    if (!e.target.value) numberValidity(numberElement);
+    if (!e.target.value) numberValidity(numberElement, customers);
 })
 rateElement.addEventListener("blur", (e) => {
     if (!e.target.value) ratetValidity(rateElement);
@@ -433,38 +461,38 @@ currencyElement.addEventListener("blur", (e) => {
     if (!e.target.value) currencyValidity(currencyElement);
 })
 
-function checkInputsValidation() {
-    firstNameValidity(firstNameElement);
+function checkInputsValidation(originalCustomers) {
+    firstNameValidity(firstNameElement, originalCustomers);
     lastNameValidity(lastNameElement);
     descriptionValidity(descriptionElement);
     statusValidity(customerStatusElement);
     currencyValidity(currencyElement);
-    numberValidity(numberElement);
+    numberValidity(numberElement, originalCustomers);
     depositValidity(depositElement);
     ratetValidity(rateElement);
     balanceValidity(balanceElement);
 }
 
-function firstNameValidity(input) {
+function firstNameValidity(input, originalCustomers) {
     if (hasValue(input)) {
         return false;
     } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
         return false;
-    } else if (isFirstNameExist(input)) {
+    } else if (isFirstNameExist(input, originalCustomers)) {
         return false;
     } else {
         return true
     }
 }
 
-function numberValidity(input) {
+function numberValidity(input, originalCustomers) {
     if (hasValue(input)) {
         return false;
     } else if (isNumber(input)) {
         return false
     } else if (validLength(input)) {
         return false;
-    } else if (isNumberExist(input)) {
+    } else if (isNumberExist(input, originalCustomers)) {
         return false;
     }
     return true;
@@ -554,8 +582,8 @@ function validLength(input) {
     return false;
 }
 
-function isNumberExist(input) {
-    let isExist = customers.some(customer => customer.id == input.value);
+function isNumberExist(input, originalCustomers) {
+    let isExist = originalCustomers.some(customer => customer.id == input.value);
     if (isExist) {
         setErrorForInput(input, `${input.name} already exist`);
         return true;
@@ -564,8 +592,8 @@ function isNumberExist(input) {
     return false;
 }
 
-function isFirstNameExist(input) {
-    let isExist = customers.some(customer => customer.firstName.toLowerCase() === input.value.toLowerCase());
+function isFirstNameExist(input, originalCustomers) {
+    let isExist = originalCustomers.some(customer => customer.firstName.toLowerCase() === input.value.toLowerCase());
     if (isExist) {
         setErrorForInput(input, `${input.name} already exist`);
         return true;
@@ -598,8 +626,8 @@ function isInputsValiditySuccess(inputsList) {
     })
 }
 
-function updateTable(inputsList, customerDataFromUser, index, message) {
-    spliceDataInOriginalList(customers, index, customerDataFromUser)
+function updateTable(inputsList, customerDataFromUser, index, message, number) {
+    spliceDataInOriginalList(customers, index, customerDataFromUser, number)
     setCustomersInLocalStorage(customers);
     restInputsValue(inputsList);
     restInputsStyle(inputsList);
@@ -610,8 +638,8 @@ function updateTable(inputsList, customerDataFromUser, index, message) {
     upDateProgressValue(countValidInputs(inputsList));
 }
 
-function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser) {
-    originalCustomesList.splice(customerIndex, 0, customerDataFromUser)
+function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser, number = 0) {
+    originalCustomesList.splice(customerIndex, number, customerDataFromUser)
 }
 
 function restInputsValue(inputs) {
@@ -623,6 +651,7 @@ function restInputsValue(inputs) {
 function restInputsStyle(inputs) {
     inputs.forEach((input) => {
         input.classList.remove("success", "error");
+        input.nextElementSibling.innerHTML = "";
         //set success Icon visibility hidden
         input.nextElementSibling.nextElementSibling.classList.remove("show");
     });
@@ -733,15 +762,16 @@ function hideOptions(event) {
 }
 
 function updateCustomer(originalCustomesList, customerId) {
-    customerToUpdate = originalCustomesList.filter(customer => customer.id == customerId)[0];
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
+    customerToUpdate = originalCustomesList.filter(customer => customer.id == customerId);
+    let [{ firstName, lastName, description, rate, balance, deposit, status, id, currency }] = customerToUpdate;
 
-    form.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
     formHeaderElement.innerText = "Update Customer";
+    form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     submitBtn.classList.add("hide-btn");
     btnGroupElement.classList.add("btn-group");
-    customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
-    originalCustomesList.splice(customerToUpdateIndex, 1);
+    customerToUpdateIndex = originalCustomesList.indexOf(...customerToUpdate);
+    let originalCustomersListCopy = originalCustomesList.slice();
+    originalCustomersListCopy.splice(customerToUpdateIndex, 1);
     firstNameElement.value = firstName;
     lastNameElement.value = lastName;
     numberElement.value = id;
@@ -751,7 +781,7 @@ function updateCustomer(originalCustomesList, customerId) {
     currencyElement.value = currency;
     customerStatusElement.value = status;
     descriptionElement.value = description;
-    checkInputsValidation();
+    checkInputsValidation(originalCustomersListCopy);
     upDateProgressValue(countValidInputs(inputsElements));
 }
 

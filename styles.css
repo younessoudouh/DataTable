@@ -49,8 +49,8 @@ header {
     background: #DAE1EC;
     border-radius: 4px;
     padding: 10px;
-    width: 30%;
     display: flex;
+    width: 100%;
 }
 
 tr th:last-of-type {
@@ -336,10 +336,6 @@ form>div {
     position: relative;
 }
 
-.show {
-    visibility: visible;
-}
-
 .add {
     max-width: 30%;
     transition: all .5s;
@@ -373,6 +369,10 @@ form>div {
 
 .hidden {
     visibility: hidden;
+}
+
+.show {
+    visibility: visible;
 }
 
 @keyframes notification-animation {
@@ -413,13 +413,16 @@ form>div {
 }
 
 .progress-bar {
-    position: relative;
     width: 450px;
     height: 25px;
     background-color: #DAE1EC;
     border-radius: 10px;
     margin: auto;
     overflow: hidden;
+    position: fixed;
+    z-index: 600;
+    left: 50%;
+    transform: translate(-50%);
 }
 
 .progress {
@@ -490,4 +493,54 @@ form>div {
 .btn-group {
     display: flex;
     gap: 5px;
+}
+
+.fa-trash-alt:hover,
+.fa-pen:hover,
+.fa-ellipsis-h:hover {
+    color: black;
+    transform: scale(1.2);
+}
+
+.filter-side {
+    display: flex;
+    align-items: center;
+    gap: 8%;
+    min-width: 35%;
+}
+
+.sort {
+    position: absolute;
+    background-color: #fff;
+    z-index: 500;
+    padding: 10px;
+    width: 150px;
+    box-shadow: 2px 2px 10px 4px rgba(46, 46, 51, 0.2);
+    border-radius: 5px;
+    pointer-events: visibleFill;
+}
+
+.sort h3 {
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.filter {
+    position: relative;
+    cursor: pointer;
+}
+
+.option-sort {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sort-by-name {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ebf2ff;
+}
+
+.sort-by-status {
+    padding-top: 10px;
 }
