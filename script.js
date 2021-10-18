@@ -248,6 +248,7 @@ const btnGroupElement = document.getElementById("btn-group");
 const cancelBtn = document.getElementById("cancel");
 const filterElement = document.getElementById("filter");
 const sortModuleElement = document.getElementById("sort-module");
+const radioInputsElements = document.querySelectorAll("input[type='radio']");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -255,6 +256,7 @@ let customersReadyToRender;
 let tableRowElement;
 let customerToUpdate;
 let customerToUpdateIndex;
+let sortBy = [...document.querySelectorAll("input[type='radio']:checked")].map(input => input.value);
 
 let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
 
@@ -276,6 +278,40 @@ let customers = JSON.parse(localStorage.getItem("customers")) ?
 
 render(customers);
 
+radioInputsElements.forEach(input => {
+    input.addEventListener("change", () => {
+        sortBy = [...document.querySelectorAll("input[type='radio']:checked")].map(input => input.value);
+        render(customers);
+    })
+})
+
+function sortCombined(originalCustomers, sortCombinedOrders) {
+    if (sortCombinedOrders === undefined) return originalCustomers;
+    let sortedByNameOptinon = sortCustomersByNamee(originalCustomers, sortCombinedOrders[0]);
+    return sortByActiveCombined(sortedByNameOptinon, sortCombinedOrders[1]);
+}
+
+function sortCustomersByNamee(originalCustomers, sortOrder) {
+    let originalCustomersCopy = originalCustomers.slice();
+    if (sortOrder === "first-name") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
+    if (sortOrder === "last-name") return originalCustomersCopy.sort((customer1, customer2) => (customer1.lastName > customer2.lastName) ? 1 : -1);
+    return originalCustomersCopy;
+}
+
+function sortByActiveCombined(originalCustomersSortedByName, sortOrder) {
+    if (sortOrder === "all") return originalCustomersSortedByName;
+    if (sortOrder === "active") {
+        let sorted1 = originalCustomersSortedByName.filter(customer => customer.status === "active");
+        let sorted2 = originalCustomersSortedByName.filter(customer => customer.status === "inactive");
+        return sorted1.concat(sorted2)
+    }
+    if (sortOrder === "inactive") {
+        let sorted1 = originalCustomersSortedByName.filter(customer => customer.status === "inactive");
+        let sorted2 = originalCustomersSortedByName.filter(customer => customer.status === "active");
+        return sorted1.concat(sorted2)
+    }
+}
+
 function showProgress(progressValue) {
     progressElement.style.width = `${progressValue}%`;
     percentElement.textContent = `Progress: ${progressValue} %`;
@@ -292,7 +328,7 @@ function setCustomersInLocalStorage(originalCustomesList) {
     return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
 }
 
-filterElement.addEventListener("click", () => {
+filterElement.addEventListener("click", (e) => {
     sortModuleElement.classList.toggle("hide-btn");
     sortModuleElement.scrollIntoView();
 })
@@ -316,9 +352,9 @@ updateBtn.addEventListener("click", () => {
 cancelBtn.addEventListener("click", () => {
     restInputsValue(inputsElements);
     restInputsStyle(inputsElements);
-    tableRowElement = document.getElementById(customerToUpdate[0].firstName);
+    tableRowElement = document.getElementById(customerToUpdate.firstName);
     showUpHiglightedcustomer(tableRowElement);
-    showNotification(notificationElement, customerToUpdate[0].firstName, "canceled update");
+    showNotification(notificationElement, customerToUpdate.firstName, "canceled update");
     upDateProgressValue(countValidInputs(inputsElements));
     submitBtn.classList.remove("hide-btn");
     btnGroupElement.classList.remove("btn-group");
@@ -330,10 +366,10 @@ cancelBtn.addEventListener("click", () => {
 
 function getCustomerDataFromUser() {
     let firstName = firstNameElement.value.trim() !== "" ?
-        firstNameElement.value[0].toUpperCase() + firstNameElement.value.slice(1).toLowerCase() :
+        valuecapitalize(firstNameElement.value) :
         firstNameElement.value;
     let lastName = lastNameElement.value.trim() !== "" ?
-        lastNameElement.value[0].toUpperCase() + lastNameElement.value.slice(1).toLowerCase() :
+        valuecapitalize(lastNameElement.value) :
         lastNameElement.value;
     let id = numberElement.value;
     let description = descriptionElement.value;
@@ -353,6 +389,10 @@ function getCustomerDataFromUser() {
         deposit,
         status
     };
+}
+
+function valuecapitalize(word) {
+    return word[0].toUpperCase() + word.slice(1).toLowerCase()
 }
 
 addCustomer.addEventListener("click", () => {
@@ -378,7 +418,6 @@ form.addEventListener("submit", (e) => {
 })
 
 function showUpHiglightedcustomer(customerField) {
-    console.log(customerField)
     if (customerField !== null) {
         customerField.scrollIntoView();
         customerField.classList.add("highlight");
@@ -689,7 +728,8 @@ function render(customersToRender) {
     tableElement.innerHTML = "";
     rowsPerPage = selectElement.value;
     let searchedCustomers = searchCustomersByName(customersToRender);
-    let sortedCustomersByStatus = sortCustomersByStatus(searchedCustomers, sortStatusOrder);
+    let sortedCombinedCustomers = sortCombined(searchedCustomers, sortBy);
+    let sortedCustomersByStatus = sortCustomersByStatus(sortedCombinedCustomers, sortStatusOrder);
     let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
     customersReadyToRender = sortedCustomersByName;
     let currentCustomers = customersReadyToRender.slice((currentPage - 1) * rowsPerPage, rowsPerPage * (currentPage));
@@ -762,14 +802,14 @@ function hideOptions(event) {
 }
 
 function updateCustomer(originalCustomesList, customerId) {
-    customerToUpdate = originalCustomesList.filter(customer => customer.id == customerId);
-    let [{ firstName, lastName, description, rate, balance, deposit, status, id, currency }] = customerToUpdate;
+    customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
 
     formHeaderElement.innerText = "Update Customer";
     form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     submitBtn.classList.add("hide-btn");
     btnGroupElement.classList.add("btn-group");
-    customerToUpdateIndex = originalCustomesList.indexOf(...customerToUpdate);
+    customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
     let originalCustomersListCopy = originalCustomesList.slice();
     originalCustomersListCopy.splice(customerToUpdateIndex, 1);
     firstNameElement.value = firstName;
@@ -805,6 +845,7 @@ nameElement.addEventListener("click", () => {
         sortStatusOrder = undefined;
         statusElement.classList.remove("sort-desc", "sort-asc");
     }
+
     if (sortNameOrder === "asc") {
         sortNameOrder = "desc";
         nameElement.classList.add("sort-desc");
@@ -844,24 +885,25 @@ function searchCustomersByName(customersToSearchIn) {
     return searchedCustomers;
 }
 
-function sortCustomersByStatus(originCustomers, sortOrder) {
-    let originCopyForFilter = originCustomers.slice();
+function sortCustomersByStatus(originalCustomers, sortOrder) {
+    let originCopyForFilter = originalCustomers.slice();
     if (sortOrder === "asc") return (originCopyForFilter.filter((customer) => customer.status === "active"))
-        .concat(originCustomers.filter((customer) => customer.status === "inactive"));
+        .concat(originalCustomers.filter((customer) => customer.status === "inactive"));
     if (sortOrder === "desc") return (originCopyForFilter.filter((customer) => customer.status === "inactive"))
-        .concat(originCustomers.filter((customer) => customer.status === "active"));
-    return originCustomers;
+        .concat(originalCustomers.filter((customer) => customer.status === "active"));
+    return originalCustomers;
 }
 
-function sortCustomersByName(originCustomers, sortOrder) {
-    if (sortOrder === "asc") return originCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
-    if (sortOrder === "desc") return originCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
-    return originCustomers;
+function sortCustomersByName(originalCustomers, sortOrder) {
+    let originalCustomersCopy = originalCustomers.slice();
+    if (sortOrder === "asc") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
+    if (sortOrder === "desc") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
+    return originalCustomersCopy;
 }
 
-function deleteCustomer(originCustomers, customerId) {
+function deleteCustomer(originalCustomers, customerId) {
     if (confirm("are you sure")) {
-        customers = originCustomers.filter(customer => {
+        customers = originalCustomers.filter(customer => {
             return customer.id != customerId;
         })
         render(customers);

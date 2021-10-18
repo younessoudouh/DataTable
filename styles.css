@@ -470,7 +470,6 @@ form>div {
 
 .option {
     padding: 4px 10px;
-    cursor: pointer;
 }
 
 .option:hover {
@@ -509,6 +508,10 @@ form>div {
     min-width: 35%;
 }
 
+img[alt="filter"] {
+    cursor: pointer;
+}
+
 .sort {
     position: absolute;
     background-color: #fff;
@@ -517,7 +520,6 @@ form>div {
     width: 150px;
     box-shadow: 2px 2px 10px 4px rgba(46, 46, 51, 0.2);
     border-radius: 5px;
-    pointer-events: visibleFill;
 }
 
 .sort h3 {
@@ -527,7 +529,6 @@ form>div {
 
 .filter {
     position: relative;
-    cursor: pointer;
 }
 
 .option-sort {
@@ -543,4 +544,9 @@ form>div {
 
 .sort-by-status {
     padding-top: 10px;
+}
+
+input[type='radio'],
+label {
+    cursor: pointer;
 }
