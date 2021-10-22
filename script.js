@@ -7,7 +7,8 @@ let clients = [{
         balance: "000.00",
         deposit: "560.00",
         status: "active",
-        currency: "INR"
+        currency: "INR",
+        selected: "selected"
     },
     {
         firstName: "Alexis",
@@ -256,8 +257,8 @@ let customersReadyToRender;
 let tableRowElement;
 let customerToUpdate;
 let customerToUpdateIndex;
+let originalCustomersListCopy;
 let sortBy = [...document.querySelectorAll("input[type='radio']:checked")].map(input => input.value);
-
 let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
 
 function countValidInputs(inputs) {
@@ -322,7 +323,6 @@ function upDateProgressValue(validInputs) {
     progress = Math.round(progress);
     showProgress(progress);
 }
-
 
 function setCustomersInLocalStorage(originalCustomesList) {
     return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
@@ -406,6 +406,7 @@ addCustomer.addEventListener("click", () => {
     formHeaderElement.innerText = "Add Customer";
     form.scrollIntoView();
     firstNameElement.focus();
+    upDateProgressValue(countValidInputs(inputsElements));
 })
 
 form.addEventListener("submit", (e) => {
@@ -428,7 +429,11 @@ function showUpHiglightedcustomer(customerField) {
 }
 
 firstNameElement.addEventListener("input", () => {
-    firstNameValidity(firstNameElement, customers);
+    if (btnGroupElement.classList.contains("btn-group")) {
+        firstNameValidity(firstNameElement, originalCustomersListCopy);
+    } else {
+        firstNameValidity(firstNameElement, customers);
+    }
     upDateProgressValue(countValidInputs(inputsElements))
 })
 lastNameElement.addEventListener("input", () => {
@@ -437,7 +442,11 @@ lastNameElement.addEventListener("input", () => {
 })
 
 numberElement.addEventListener("input", () => {
-    numberValidity(numberElement, customers);
+    if (btnGroupElement.classList.contains("btn-group")) {
+        numberValidity(numberElement, originalCustomersListCopy);
+    } else {
+        numberValidity(numberElement, customers);
+    }
     upDateProgressValue(countValidInputs(inputsElements))
 })
 rateElement.addEventListener("input", () => {
@@ -740,16 +749,19 @@ function render(customersToRender) {
     activeCustomerElement.innerHTML = `active customers:
      <strong>${countActiveCustomers(sortedCustomersByName)}</strong> / 
      <small>${sortedCustomersByName.length}</small>`;
-    displayedCustomerElement.innerHTML = `${(currentPage-1)*rowsPerPage}-${(currentCustomers.length-rowsPerPage)+rowsPerPage*(currentPage)} of ${sortedCustomersByName.length}`;
+    let currentCustomersStart = currentPage === 1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
+    let currentCustomersEnd = customersReadyToRender.length < rowsPerPage * currentPage ? (currentCustomers.length - rowsPerPage) + rowsPerPage * (currentPage) : rowsPerPage * (currentPage);
+    displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${sortedCustomersByName.length}`;
 }
 
 function createElement(customer) {
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customer;
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", firstName);
+    if (selected !== undefined) row.setAttribute("class", selected);
 
     row.innerHTML = `
-    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(event)" class="check"></td>
+    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(event,${id})" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -810,7 +822,7 @@ function updateCustomer(originalCustomesList, customerId) {
     submitBtn.classList.add("hide-btn");
     btnGroupElement.classList.add("btn-group");
     customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
-    let originalCustomersListCopy = originalCustomesList.slice();
+    originalCustomersListCopy = originalCustomesList.slice();
     originalCustomersListCopy.splice(customerToUpdateIndex, 1);
     firstNameElement.value = firstName;
     lastNameElement.value = lastName;
@@ -825,7 +837,7 @@ function updateCustomer(originalCustomesList, customerId) {
     upDateProgressValue(countValidInputs(inputsElements));
 }
 
-function changeStyleForSelectedCustomer(event) {
+function changeStyleForSelectedCustomer(event, customerId) {
     event.target.parentNode.parentNode.classList.toggle("selected")
 }
 
@@ -906,6 +918,7 @@ function deleteCustomer(originalCustomers, customerId) {
         customers = originalCustomers.filter(customer => {
             return customer.id != customerId;
         })
+        customersReadyToRender.length < rowsPerPage * currentPage ? currentPage -= 1 : currentPage = currentPage;
         render(customers);
         setCustomersInLocalStorage(customers);
     }
