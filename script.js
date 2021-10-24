@@ -258,7 +258,7 @@ let tableRowElement;
 let customerToUpdate;
 let customerToUpdateIndex;
 let originalCustomersListCopy;
-let sortBy = [...document.querySelectorAll("input[type='radio']:checked")].map(input => input.value);
+let sortBy;
 let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
 
 function countValidInputs(inputs) {
@@ -288,29 +288,8 @@ radioInputsElements.forEach(input => {
 
 function sortCombined(originalCustomers, sortCombinedOrders) {
     if (sortCombinedOrders === undefined) return originalCustomers;
-    let sortedByNameOptinon = sortCustomersByNamee(originalCustomers, sortCombinedOrders[0]);
-    return sortByActiveCombined(sortedByNameOptinon, sortCombinedOrders[1]);
-}
-
-function sortCustomersByNamee(originalCustomers, sortOrder) {
-    let originalCustomersCopy = originalCustomers.slice();
-    if (sortOrder === "first-name") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
-    if (sortOrder === "last-name") return originalCustomersCopy.sort((customer1, customer2) => (customer1.lastName > customer2.lastName) ? 1 : -1);
-    return originalCustomersCopy;
-}
-
-function sortByActiveCombined(originalCustomersSortedByName, sortOrder) {
-    if (sortOrder === "all") return originalCustomersSortedByName;
-    if (sortOrder === "active") {
-        let sorted1 = originalCustomersSortedByName.filter(customer => customer.status === "active");
-        let sorted2 = originalCustomersSortedByName.filter(customer => customer.status === "inactive");
-        return sorted1.concat(sorted2)
-    }
-    if (sortOrder === "inactive") {
-        let sorted1 = originalCustomersSortedByName.filter(customer => customer.status === "inactive");
-        let sorted2 = originalCustomersSortedByName.filter(customer => customer.status === "active");
-        return sorted1.concat(sorted2)
-    }
+    let sortedByNameOption = sortCustomersByName(originalCustomers, sortCombinedOrders[0]);
+    return sortCustomersByStatus(sortedByNameOption, sortCombinedOrders[1]);
 }
 
 function showProgress(progressValue) {
@@ -338,9 +317,9 @@ sortModuleElement.addEventListener("mouseleave", () => {
 })
 
 updateBtn.addEventListener("click", () => {
-    let customerData = getCustomerDataFromUser();
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
+        let customerData = getCustomerDataFromUser();
         updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
         submitBtn.classList.remove("hide-btn");
         btnGroupElement.classList.remove("btn-group");
@@ -412,10 +391,11 @@ addCustomer.addEventListener("click", () => {
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     checkInputsValidation(customers);
-    let customerData = getCustomerDataFromUser();
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
-    if (isAllInputsValid) updateTable(inputsElements, customerData, 0, "Add");
-
+    if (isAllInputsValid) {
+        let customerData = getCustomerDataFromUser();
+        updateTable(inputsElements, customerData, 0, "Add");
+    }
 })
 
 function showUpHiglightedcustomer(customerField) {
@@ -738,30 +718,29 @@ function render(customersToRender) {
     rowsPerPage = selectElement.value;
     let searchedCustomers = searchCustomersByName(customersToRender);
     let sortedCombinedCustomers = sortCombined(searchedCustomers, sortBy);
-    let sortedCustomersByStatus = sortCustomersByStatus(sortedCombinedCustomers, sortStatusOrder);
-    let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
-    customersReadyToRender = sortedCustomersByName;
+    // let sortedCustomersByStatus = sortCustomersByStatus(sortedCombinedCustomers, sortStatusOrder);
+    // let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
+    customersReadyToRender = sortedCombinedCustomers;
     let currentCustomers = customersReadyToRender.slice((currentPage - 1) * rowsPerPage, rowsPerPage * (currentPage));
     currentCustomers.forEach(customer => {
         const row = createElement(customer);
         tableElement.append(row);
     });
     activeCustomerElement.innerHTML = `active customers:
-     <strong>${countActiveCustomers(sortedCustomersByName)}</strong> / 
-     <small>${sortedCustomersByName.length}</small>`;
+     <strong>${countActiveCustomers(sortedCombinedCustomers)}</strong> / 
+     <small>${sortedCombinedCustomers.length}</small>`;
     let currentCustomersStart = currentPage === 1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
     let currentCustomersEnd = customersReadyToRender.length < rowsPerPage * currentPage ? (currentCustomers.length - rowsPerPage) + rowsPerPage * (currentPage) : rowsPerPage * (currentPage);
-    displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${sortedCustomersByName.length}`;
+    displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${sortedCombinedCustomers.length}`;
 }
 
 function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", firstName);
-    if (selected !== undefined) row.setAttribute("class", selected);
 
     row.innerHTML = `
-    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(event,${id})" class="check"></td>
+    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(customers,${firstName},${id})" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -837,8 +816,12 @@ function updateCustomer(originalCustomesList, customerId) {
     upDateProgressValue(countValidInputs(inputsElements));
 }
 
-function changeStyleForSelectedCustomer(event, customerId) {
-    event.target.parentNode.parentNode.classList.toggle("selected")
+function changeStyleForSelectedCustomer(customersList, row, customerId) {
+    let customerIdex = customersList.findIndex((customer) => {
+        return customer.id == customerId;
+    })
+    customersList[customerIdex]["selected"] = true;
+    row.classList.toggle("selected");
 }
 
 function checkBalance(amount) {
@@ -898,19 +881,17 @@ function searchCustomersByName(customersToSearchIn) {
 }
 
 function sortCustomersByStatus(originalCustomers, sortOrder) {
-    let originCopyForFilter = originalCustomers.slice();
-    if (sortOrder === "asc") return (originCopyForFilter.filter((customer) => customer.status === "active"))
+    if (sortOrder === "active") return (originalCustomers.filter((customer) => customer.status === "active"))
         .concat(originalCustomers.filter((customer) => customer.status === "inactive"));
-    if (sortOrder === "desc") return (originCopyForFilter.filter((customer) => customer.status === "inactive"))
+    if (sortOrder === "inactive") return (originalCustomers.filter((customer) => customer.status === "inactive"))
         .concat(originalCustomers.filter((customer) => customer.status === "active"));
     return originalCustomers;
 }
 
 function sortCustomersByName(originalCustomers, sortOrder) {
-    let originalCustomersCopy = originalCustomers.slice();
-    if (sortOrder === "asc") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
-    if (sortOrder === "desc") return originalCustomersCopy.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
-    return originalCustomersCopy;
+    if (sortOrder === "asc") return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
+    if (sortOrder === "desc") return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
+    return originalCustomers;
 }
 
 function deleteCustomer(originalCustomers, customerId) {
