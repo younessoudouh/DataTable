@@ -8,7 +8,7 @@ let clients = [{
         deposit: "560.00",
         status: "active",
         currency: "INR",
-        selected: "selected"
+        selected: true
     },
     {
         firstName: "Alexis",
@@ -250,6 +250,9 @@ const cancelBtn = document.getElementById("cancel");
 const filterElement = document.getElementById("filter");
 const sortModuleElement = document.getElementById("sort-module");
 const radioInputsElements = document.querySelectorAll("input[type='radio']");
+const bodyElement = document.querySelector("body");
+const printDeletElement = document.getElementById("print-delet-gp");
+const deletSelectedElement = document.getElementById("delet-selected-customers");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -307,13 +310,18 @@ function setCustomersInLocalStorage(originalCustomesList) {
     return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
 }
 
+bodyElement.addEventListener("click", (e) => {
+    sortModuleElement.classList.add("hide-btn");
+})
+
 filterElement.addEventListener("click", (e) => {
+    e.stopPropagation();
     sortModuleElement.classList.toggle("hide-btn");
     sortModuleElement.scrollIntoView();
 })
 
-sortModuleElement.addEventListener("mouseleave", () => {
-    sortModuleElement.classList.add("hide-btn");
+sortModuleElement.addEventListener("click", (e) => {
+    e.stopPropagation();
 })
 
 updateBtn.addEventListener("click", () => {
@@ -407,6 +415,10 @@ function showUpHiglightedcustomer(customerField) {
         }, 3000)
     }
 }
+
+deletSelectedElement.addEventListener("click", () => {
+    deleteSelectedCustomers(customers);
+})
 
 firstNameElement.addEventListener("input", () => {
     if (btnGroupElement.classList.contains("btn-group")) {
@@ -727,11 +739,11 @@ function render(customersToRender) {
         tableElement.append(row);
     });
     activeCustomerElement.innerHTML = `active customers:
-     <strong>${countActiveCustomers(sortedCombinedCustomers)}</strong> / 
-     <small>${sortedCombinedCustomers.length}</small>`;
+     <strong>${countActiveCustomers(customersReadyToRender)}</strong> / 
+     <small>${customersReadyToRender.length}</small>`;
     let currentCustomersStart = currentPage === 1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
     let currentCustomersEnd = customersReadyToRender.length < rowsPerPage * currentPage ? (currentCustomers.length - rowsPerPage) + rowsPerPage * (currentPage) : rowsPerPage * (currentPage);
-    displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${sortedCombinedCustomers.length}`;
+    displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${customersReadyToRender.length}`;
 }
 
 function createElement(customer) {
@@ -740,7 +752,7 @@ function createElement(customer) {
     row.setAttribute("id", firstName);
 
     row.innerHTML = `
-    <td><input type="checkbox" onClick="changeStyleForSelectedCustomer(customers,${firstName},${id})" class="check"></td>
+    <td><input type="checkbox" onClick="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -770,9 +782,14 @@ function createElement(customer) {
             <i class="fas fa-ellipsis-h" onClick="showOptions(event)"></i>
             <i class="far fa-times-circle hide hidden" onClick="hideOptions(event)"></i>
             <div class="options hidden">
-                <small class="option">View</small>
-                <small class="option">Status</small>
-                <small class="option" >Print</small>
+                <div class="option">
+                    <label for="view-option">View</label>
+                    <input type="radio" name="option" id="view-option" value="view" hidden>
+                </div>
+                <div class="option">
+                    <label for="print-option">print</label>
+                    <input type="radio" name="option" id="print-option" value="print" hidden>
+                </div>
             </div>
         </div>
     </td>
@@ -816,12 +833,51 @@ function updateCustomer(originalCustomesList, customerId) {
     upDateProgressValue(countValidInputs(inputsElements));
 }
 
-function changeStyleForSelectedCustomer(customersList, row, customerId) {
-    let customerIdex = customersList.findIndex((customer) => {
+function changeCustomerSelectedProperty(customersList, row, customerId) {
+    let customerIndex = customersList.findIndex((customer) => {
         return customer.id == customerId;
     })
-    customersList[customerIdex]["selected"] = true;
+    if (!row.classList.contains("selected")) {
+        customersList[customerIndex]["selected"] = true;
+    } else {
+        customersList[customerIndex]["selected"] = false;
+    }
+    changeStyleForSelectedCustomer(row);
+    showAndHidePrintDeleteElement(customersList);
+
+}
+
+function deleteSelectedCustomers(originalCustomers) {
+    if (confirm("are you sure you want to delete all selected customers")) {
+        customers = originalCustomers.filter((customer) => {
+            return customer.selected !== true;
+        })
+        showAndHidePrintDeleteElement(customers);
+        // customersReadyToRender.length < rowsPerPage * currentPage ? currentPage -= 1 : currentPage = currentPage;
+        currentPage = Math.round(customersReadyToRender.length / rowsPerPage);
+        console.log(currentPage)
+        render(customers);
+        setCustomersInLocalStorage(customers);
+    }
+}
+
+function showAndHidePrintDeleteElement(originalCustomers) {
+    if (countSelectedCustomers(originalCustomers) > 1) {
+        printDeletElement.classList.remove("hidden")
+    } else {
+        printDeletElement.classList.add("hidden")
+    }
+}
+
+function changeStyleForSelectedCustomer(row) {
     row.classList.toggle("selected");
+}
+
+function countSelectedCustomers(originalCustomers) {
+    let selectedCustomers = originalCustomers.filter((customer) => {
+        return customer.selected === true;
+    })
+    return selectedCustomers.length;
 }
 
 function checkBalance(amount) {

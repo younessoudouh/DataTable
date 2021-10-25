@@ -14,6 +14,10 @@
 
 <body>
     <div class="container">
+        <div class="print-delet hidden" id="print-delet-gp">
+            <i class="fas fa-print print-selected" id="print"></i>
+            <i class="far fa-trash-alt delete-selected" id="delet-selected-customers"></i>
+        </div>
         <div class="progress-bar">
             <div class="progress" id="progress"></div>
             <div class="percent" id="percent">Progress: 0%</div>
@@ -90,7 +94,7 @@
         <header>
             <div class="filter-side">
                 <div class="filter">
-                    <img src="images/Filter.png" alt="filter" id="filter">
+                    <img src="images/Filter.png" alt="filter" id="filter" class="img-filter">
                     <div class="sort hide-btn" id="sort-module">
                         <div class="sort-by-name">
                             <h3 class="sort-head">sort by:</h3>
