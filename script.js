@@ -8,7 +8,6 @@ let clients = [{
         deposit: "560.00",
         status: "active",
         currency: "INR",
-        selected: true
     },
     {
         firstName: "Alexis",
@@ -253,6 +252,8 @@ const radioInputsElements = document.querySelectorAll("input[type='radio']");
 const bodyElement = document.querySelector("body");
 const printDeletElement = document.getElementById("print-delet-gp");
 const deletSelectedElement = document.getElementById("delet-selected-customers");
+const printSelectedElement = document.getElementById("print")
+const checkAllInput = document.getElementById("check-all");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -281,6 +282,8 @@ let customers = JSON.parse(localStorage.getItem("customers")) ?
     JSON.parse(localStorage.getItem("customers")) : [];
 
 render(customers);
+
+showAndHidePrintDeleteElement(customers);
 
 radioInputsElements.forEach(input => {
     input.addEventListener("change", () => {
@@ -314,6 +317,29 @@ bodyElement.addEventListener("click", (e) => {
     sortModuleElement.classList.add("hide-btn");
 })
 
+checkAllInput.addEventListener("change", () => {
+    if (checkAllInput.checked) {
+        customers = customers.map(customer => Object.assign(customer, { "selected": true }));
+    } else {
+        customers = customers.map(customer => Object.assign(customer, { "selected": false }));
+    }
+    showAndHidePrintDeleteElement(customers)
+    render(customers)
+})
+
+printSelectedElement.addEventListener("click", () => {
+    tableElement.innerHTML = "";
+    let selectedCustomers = customers.filter((customer) => {
+        return customer.selected === true;
+    })
+    selectedCustomers.forEach(customer => {
+        const row = createElement(customer);
+        tableElement.append(row);
+    });
+    window.print()
+    render(customers)
+})
+
 filterElement.addEventListener("click", (e) => {
     e.stopPropagation();
     sortModuleElement.classList.toggle("hide-btn");
@@ -328,6 +354,13 @@ updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
+        let customerIndex = customers.findIndex((customer) => {
+            return customer.id == customerData.id;
+        })
+
+        if (customers[customerIndex].selected) {
+            customerData["selected"] = true;
+        }
         updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
         submitBtn.classList.remove("hide-btn");
         btnGroupElement.classList.remove("btn-group");
@@ -742,6 +775,7 @@ function render(customersToRender) {
      <strong>${countActiveCustomers(customersReadyToRender)}</strong> / 
      <small>${customersReadyToRender.length}</small>`;
     let currentCustomersStart = currentPage === 1 ? 1 : (currentPage - 1) * rowsPerPage + 1;
+    currentCustomersStart = customersReadyToRender.length === 0 ? 0 : currentCustomersStart;
     let currentCustomersEnd = customersReadyToRender.length < rowsPerPage * currentPage ? (currentCustomers.length - rowsPerPage) + rowsPerPage * (currentPage) : rowsPerPage * (currentPage);
     displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${customersReadyToRender.length}`;
 }
@@ -750,9 +784,13 @@ function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", firstName);
-
+    let check = "";
+    if (customer.selected === true) {
+        row.setAttribute("class", "selected");
+        check = "checked";
+    }
     row.innerHTML = `
-    <td><input type="checkbox" onClick="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
+    <td><input type="checkbox" ${check} onClick="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -853,9 +891,7 @@ function deleteSelectedCustomers(originalCustomers) {
             return customer.selected !== true;
         })
         showAndHidePrintDeleteElement(customers);
-        // customersReadyToRender.length < rowsPerPage * currentPage ? currentPage -= 1 : currentPage = currentPage;
-        currentPage = Math.round(customersReadyToRender.length / rowsPerPage);
-        console.log(currentPage)
+        currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
         render(customers);
         setCustomersInLocalStorage(customers);
     }
@@ -955,7 +991,8 @@ function deleteCustomer(originalCustomers, customerId) {
         customers = originalCustomers.filter(customer => {
             return customer.id != customerId;
         })
-        customersReadyToRender.length < rowsPerPage * currentPage ? currentPage -= 1 : currentPage = currentPage;
+        currentPage = rowsPerPage * currentPage > customers.length ? currentPage - 1 : currentPage;
+        console.log(currentPage)
         render(customers);
         setCustomersInLocalStorage(customers);
     }
