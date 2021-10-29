@@ -314,7 +314,12 @@ function setCustomersInLocalStorage(originalCustomesList) {
 }
 
 bodyElement.addEventListener("click", (e) => {
+    const timesIconElement = document.getElementById("exist");
     sortModuleElement.classList.add("hide-btn");
+    if (timesIconElement) {
+        timesIconElement.classList.add("hidden");
+        timesIconElement.previousElementSibling.classList.remove("hidden")
+    }
 })
 
 checkAllInput.addEventListener("change", () => {
@@ -533,6 +538,21 @@ depositElement.addEventListener("blur", (e) => {
 currencyElement.addEventListener("blur", (e) => {
     if (!e.target.value) currencyValidity(currencyElement);
 })
+
+function printCustomer(customerId) {
+    tableElement.innerHTML = "";
+    let customerIndex = customers.find((customer) => {
+        return customer.id == customerId;
+    })
+    let selectedCustomers = [customerIndex];
+    selectedCustomers.forEach(customer => {
+        const row = createElement(customer);
+        tableElement.append(row);
+    });
+    window.print()
+    render(customers)
+
+}
 
 function checkInputsValidation(originalCustomers) {
     firstNameValidity(firstNameElement, originalCustomers);
@@ -790,7 +810,7 @@ function createElement(customer) {
         check = "checked";
     }
     row.innerHTML = `
-    <td><input type="checkbox" ${check} onClick="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
+    <td><input type="checkbox" ${check} Onchange="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -818,17 +838,18 @@ function createElement(customer) {
             <i class="fas fa-pen" onClick="updateCustomer(customers,${id})"></i>
             <i class="far fa-trash-alt" onClick="deleteCustomer(customers,${id})"></i>
             <i class="fas fa-ellipsis-h" onClick="showOptions(event)"></i>
-            <i class="far fa-times-circle hide hidden" onClick="hideOptions(event)"></i>
-            <div class="options hidden">
-                <div class="option">
-                    <label for="view-option">View</label>
-                    <input type="radio" name="option" id="view-option" value="view" hidden>
+            <i class="far fa-times-circle hide hidden">
+                <div class="options">
+                    <div class="option">
+                        <label for="view-option">View</label>
+                        <input type="radio" name="option" id="view-option" value="view" hidden>
+                    </div>
+                    <div class="option">
+                        <label for="print-option" Onclick="printCustomer(${id})">print</label>
+                        <input type="radio" name="option" id="print-option" value="print" hidden>
+                    </div>
                 </div>
-                <div class="option">
-                    <label for="print-option">print</label>
-                    <input type="radio" name="option" id="print-option" value="print" hidden>
-                </div>
-            </div>
+            </i>
         </div>
     </td>
     `;
@@ -836,9 +857,10 @@ function createElement(customer) {
 }
 
 function showOptions(event) {
+    event.stopPropagation()
     event.target.classList.add("hidden");
     event.target.nextElementSibling.classList.remove("hidden");
-    event.target.nextElementSibling.nextElementSibling.classList.remove("hidden");
+    event.target.nextElementSibling.setAttribute("id", "exist")
 }
 
 function hideOptions(event) {
