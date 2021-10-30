@@ -279,7 +279,8 @@ function setCustomersInLocalStorageOnce(originalCustomesList) {
 setCustomersInLocalStorageOnce(clients)
 
 let customers = JSON.parse(localStorage.getItem("customers")) ?
-    JSON.parse(localStorage.getItem("customers")) : [];
+    JSON.parse(localStorage.getItem("customers"))
+    .map(customer => Object.assign(customer, { "selected": false })) : [];
 
 render(customers);
 
@@ -317,7 +318,11 @@ bodyElement.addEventListener("click", (e) => {
     const timesIconElement = document.getElementById("exist");
     sortModuleElement.classList.add("hide-btn");
     if (timesIconElement) {
+        timesIconElement.previousElementSibling.addEventListener("click", (e) => {
+            e.stopPropagation()
+        })
         timesIconElement.classList.add("hidden");
+        timesIconElement.removeAttribute('id');
         timesIconElement.previousElementSibling.classList.remove("hidden")
     }
 })
@@ -331,6 +336,16 @@ checkAllInput.addEventListener("change", () => {
     showAndHidePrintDeleteElement(customers)
     render(customers)
 })
+
+function changeCheckAllInputStatus(customersList) {
+    let isAllChecked = customersList.every(customer => customer.selected === true);
+
+    if (isAllChecked) {
+        checkAllInput.checked = true
+    } else {
+        checkAllInput.checked = false;
+    }
+}
 
 printSelectedElement.addEventListener("click", () => {
     tableElement.innerHTML = "";
@@ -359,12 +374,11 @@ updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
-        let customerIndex = customers.findIndex((customer) => {
-            return customer.id == customerData.id;
-        })
 
-        if (customers[customerIndex].selected) {
+        if (customerToUpdate.selected) {
             customerData["selected"] = true;
+        } else {
+            customerData["selected"] = false;
         }
         updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
         submitBtn.classList.remove("hide-btn");
@@ -857,16 +871,9 @@ function createElement(customer) {
 }
 
 function showOptions(event) {
-    event.stopPropagation()
     event.target.classList.add("hidden");
     event.target.nextElementSibling.classList.remove("hidden");
     event.target.nextElementSibling.setAttribute("id", "exist")
-}
-
-function hideOptions(event) {
-    event.target.nextElementSibling.classList.add("hidden");
-    event.target.previousElementSibling.classList.remove("hidden");
-    event.target.classList.add("hidden");
 }
 
 function updateCustomer(originalCustomesList, customerId) {
@@ -904,6 +911,7 @@ function changeCustomerSelectedProperty(customersList, row, customerId) {
     }
     changeStyleForSelectedCustomer(row);
     showAndHidePrintDeleteElement(customersList);
+    changeCheckAllInputStatus(customersList)
 
 }
 
