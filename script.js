@@ -329,11 +329,12 @@ bodyElement.addEventListener("click", (e) => {
 
 checkAllInput.addEventListener("change", () => {
     if (checkAllInput.checked) {
-        customers = customers.map(customer => Object.assign(customer, { "selected": true }));
+        customersReady = customersReadyToRender.map(customer => Object.assign(customer, { "selected": true }));
     } else {
-        customers = customers.map(customer => Object.assign(customer, { "selected": false }));
+        customersReadyToRender = customersReadyToRender.map(customer => Object.assign(customer, { "selected": false }));
     }
     showAndHidePrintDeleteElement(customers)
+    changeCheckAllInputStatus(customersReadyToRender);
     render(customers)
 })
 
@@ -920,6 +921,7 @@ function deleteSelectedCustomers(originalCustomers) {
         customers = originalCustomers.filter((customer) => {
             return customer.selected !== true;
         })
+        console.log(customers)
         showAndHidePrintDeleteElement(customers);
         currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
         render(customers);
@@ -955,6 +957,7 @@ function checkBalance(amount) {
 searchElement.addEventListener("keyup", () => {
     currentPage = 1;
     render(customers);
+    changeCheckAllInputStatus(customersReadyToRender)
 })
 
 nameElement.addEventListener("click", () => {
