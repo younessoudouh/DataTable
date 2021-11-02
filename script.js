@@ -722,9 +722,7 @@ function checkOnlyLetters(input, regx) {
 }
 
 function isInputsValiditySuccess(inputsList) {
-    return inputsList.every(input => {
-        return input.classList.contains("success");
-    })
+    return inputsList.every(input => input.classList.contains("success"))
 }
 
 function updateTable(inputsList, customerDataFromUser, index, message, number) {
@@ -880,7 +878,7 @@ function unlockCustomer(event, originalCustomers, customerId) {
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
-    duplicateOrEdit = 1;
+    duplicateOrEdit = 0;
     customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
     formHeaderElement.innerText = "Update Customer";
@@ -923,7 +921,7 @@ function showOptions(event) {
 
 function updateCustomer(originalCustomesList, customerId) {
     let isProtected = isCustomerProtected(originalCustomesList, customerId);
-    duplicateOrEdit = 0;
+    duplicateOrEdit = 1;
     if (isProtected) {
         return;
     } else {
@@ -961,12 +959,7 @@ function isCustomerProtected(originalCustomesList, customerId) {
 
 function changeCustomerSelectedProperty(customersList, row, customerId) {
     let customerIndex = customers.findIndex((customer) => customer.id == customerId)
-
-    if (!row.classList.contains("selected")) {
-        customersList[customerIndex]["selected"] = true;
-    } else {
-        customersList[customerIndex]["selected"] = false;
-    }
+    customersList[customerIndex]["selected"] = row.classList.contains("selected") ? false : true;
     changeStyleForSelectedCustomer(row);
     showAndHidePrintDeleteElement(customersList);
     changeCheckAllInputStatus(customersList)
@@ -975,10 +968,7 @@ function changeCustomerSelectedProperty(customersList, row, customerId) {
 
 function deleteSelectedCustomers(originalCustomers) {
     if (confirm("are you sure you want to delete all selected customers")) {
-        customers = originalCustomers.filter((customer) => {
-            return customer.selected === false || customer.protected === true;
-        })
-        console.log(customers)
+        customers = originalCustomers.filter((customer) => customer.selected === false || customer.protected === true)
 
         showAndHidePrintDeleteElement(originalCustomers);
         currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
@@ -1001,9 +991,7 @@ function changeStyleForSelectedCustomer(row) {
 }
 
 function countSelectedCustomers(originalCustomers) {
-    let selectedCustomers = originalCustomers.filter((customer) => {
-        return customer.selected === true;
-    })
+    let selectedCustomers = originalCustomers.filter((customer) => customer.selected === true)
     return selectedCustomers.length;
 }
 
@@ -1081,12 +1069,9 @@ function sortCustomersByName(originalCustomers, sortOrder) {
 function deleteCustomer(originalCustomers, customerId) {
     let isProtected = isCustomerProtected(originalCustomers, customerId);
 
-    if (isProtected) {
-        return;
-    } else if (confirm("are you sure")) {
-        customers = originalCustomers.filter(customer => {
-            return customer.id != customerId;
-        })
+    if (isProtected) return;
+    if (confirm("are you sure")) {
+        customers = originalCustomers.filter(customer => customer.id != customerId)
         currentPage = rowsPerPage * currentPage > customers.length ? currentPage - 1 : currentPage;
         render(customers);
         showAndHidePrintDeleteElement(customers)
@@ -1095,9 +1080,7 @@ function deleteCustomer(originalCustomers, customerId) {
 }
 
 function countActiveCustomers(customersToCountIn) {
-    return customersToCountIn.filter(customer => {
-        return customer.status === "active";
-    }).length;
+    return customersToCountIn.filter(customer => customer.status === "active").length;
 }
 
 selectElement.addEventListener("change", () => {
