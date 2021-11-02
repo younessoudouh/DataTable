@@ -235,6 +235,10 @@ select {
     font-size: 16px;
 }
 
+tbody tr {
+    cursor: pointer;
+}
+
 tbody tr:hover {
     background: #DAE1EC;
     box-shadow: inset 2px 2px 3px #7D90B2, inset -2px -2px 3px #7D90B2;
@@ -352,12 +356,6 @@ form>div {
     margin-right: 10px;
 }
 
-.hide {
-    position: absolute;
-    right: 0;
-    z-index: 300;
-}
-
 .notification {
     position: fixed;
     background-color: #7D90B2;
@@ -375,6 +373,7 @@ form>div {
 
 .show {
     visibility: visible;
+    opacity: 1;
 }
 
 @keyframes notification-animation {
@@ -456,19 +455,6 @@ form>div {
     background-color: #ebf2ff !important;
 }
 
-.options {
-    position: absolute;
-    top: 60%;
-    display: flex;
-    color: black;
-    flex-direction: column;
-    background: #fff;
-    z-index: 200;
-    padding: 4px 0;
-    box-shadow: 2px 2px 10px 2px rgba(46, 46, 51, 0.2);
-    transform: translateX(-99%);
-}
-
 .option {
     padding: 4px 10px;
 }
@@ -498,7 +484,7 @@ form>div {
 .fa-trash-alt:hover,
 .fa-pen:hover,
 .print-selected:hover,
-.fa-ellipsis-h:hover {
+.fa-ellipsis-v:hover {
     color: black;
     transform: scale(1.2);
 }
@@ -628,4 +614,90 @@ label {
     .selected {
         border-left: 1px solid black;
     }
+}
+
+.fa-plus,
+.fa-copy,
+.fa-lock,
+.fa-unlock {
+    position: absolute;
+    bottom: 5%;
+    left: 10%;
+    color: #0A65FF;
+    padding: 1px;
+    visibility: hidden;
+}
+
+.fa-copy {
+    left: 50%;
+}
+
+.fa-lock,
+.fa-unlock {
+    left: 90%;
+}
+
+.relative {
+    position: relative;
+}
+
+tbody tr:hover .fa-plus,
+tbody tr:hover .fa-copy,
+tbody tr:hover .fa-lock,
+tbody tr:hover .fa-unlock {
+    visibility: visible;
+}
+
+tbody tr.selected .fa-plus,
+tbody tr.selected .fa-copy,
+tbody tr.selected .fa-lock,
+tbody tr.selected .fa-unlock {
+    color: #2E3B52;
+}
+
+.fa-copy:hover,
+.fa-plus:hover,
+.fa-lock:hover,
+.fa-unlock:hover {
+    transform: scale(1.2);
+}
+
+.options i {
+    margin-bottom: 10px;
+    color: #454d5a;
+}
+
+.options i:hover {
+    color: #0A65FF;
+    transform: scale(1.2);
+}
+
+.circle {
+    position: absolute;
+    right: 0;
+    z-index: 300;
+    transform: translateX(30%);
+    pointer-events: none;
+}
+
+.options {
+    position: absolute;
+    display: flex;
+    color: black;
+    flex-direction: column;
+    background: #fff;
+    z-index: 200;
+    padding: 4px 0;
+    box-shadow: 2px 2px 10px 2px rgba(46, 46, 51, 0.2);
+    transform: translateX(-90%);
+    padding: 5px 10px 0;
+    pointer-events: visiblePainted;
+}
+
+.hide {
+    opacity: 0;
+}
+
+.display {
+    display: none!important;
 }

@@ -263,6 +263,7 @@ let customerToUpdate;
 let customerToUpdateIndex;
 let originalCustomersListCopy;
 let sortBy;
+let specificIndex = 0;
 let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
 
 function countValidInputs(inputs) {
@@ -280,7 +281,7 @@ setCustomersInLocalStorageOnce(clients)
 
 let customers = JSON.parse(localStorage.getItem("customers")) ?
     JSON.parse(localStorage.getItem("customers"))
-    .map(customer => Object.assign(customer, { "selected": false })) : [];
+    .map(customer => Object.assign(customer, { "selected": false, "protected": false })) : [];
 
 render(customers);
 
@@ -315,16 +316,7 @@ function setCustomersInLocalStorage(originalCustomesList) {
 }
 
 bodyElement.addEventListener("click", (e) => {
-    const timesIconElement = document.getElementById("exist");
     sortModuleElement.classList.add("hide-btn");
-    if (timesIconElement) {
-        timesIconElement.previousElementSibling.addEventListener("click", (e) => {
-            e.stopPropagation()
-        })
-        timesIconElement.classList.add("hidden");
-        timesIconElement.removeAttribute('id');
-        timesIconElement.previousElementSibling.classList.remove("hidden")
-    }
 })
 
 checkAllInput.addEventListener("change", () => {
@@ -436,6 +428,7 @@ function valuecapitalize(word) {
 }
 
 addCustomer.addEventListener("click", () => {
+    specificIndex = 0;
     restInputsValue(inputsElements);
     restInputsStyle(inputsElements);
     submitBtn.classList.remove("hide-btn");
@@ -455,7 +448,9 @@ form.addEventListener("submit", (e) => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
-        updateTable(inputsElements, customerData, 0, "Add");
+        updateTable(inputsElements, customerData, specificIndex, "Add");
+        changeCheckAllInputStatus(customersReadyToRender);
+        specificIndex = 0;
     }
 })
 
@@ -825,7 +820,13 @@ function createElement(customer) {
         check = "checked";
     }
     row.innerHTML = `
-    <td><input type="checkbox" ${check} Onchange="changeCustomerSelectedProperty(customers,${firstName},${id})" class="check"></td>
+    <td class="relative">
+        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${firstName},${id})" class="check">
+        <i class="fas fa-plus" onclick="getSpesificIndex(customers,${id})"></i>
+        <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
+        <i class="fas fa-lock display" onclick="lockCustomer(event,customers,${id})"></i>
+        <i class="fas fa-unlock" onclick="unlockCustomer(event,customers,${id})"></i>
+    </td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
         <div class="customer-id"> ${id}</div>
@@ -852,17 +853,10 @@ function createElement(customer) {
         <div class="flex">
             <i class="fas fa-pen" onClick="updateCustomer(customers,${id})"></i>
             <i class="far fa-trash-alt" onClick="deleteCustomer(customers,${id})"></i>
-            <i class="fas fa-ellipsis-h" onClick="showOptions(event)"></i>
-            <i class="far fa-times-circle hide hidden">
-                <div class="options">
-                    <div class="option">
-                        <label for="view-option">View</label>
-                        <input type="radio" name="option" id="view-option" value="view" hidden>
-                    </div>
-                    <div class="option">
-                        <label for="print-option" Onclick="printCustomer(${id})">print</label>
-                        <input type="radio" name="option" id="print-option" value="print" hidden>
-                    </div>
+            <i class="fas fa-ellipsis-v" onClick="showOptions(event)"></i>
+            <i class="far fa-times-circle circle hidden">
+                <div class="options">                  
+                    <i class="fas fa-print" onclick="printCustomer(${id})"></i>    
                 </div>
             </i>
         </div>
@@ -871,10 +865,51 @@ function createElement(customer) {
     return row;
 }
 
+function lockCustomer(event, originalCustomers, customerId) {
+    event.target.classList.toggle("display");
+    event.target.nextElementSibling.classList.toggle("display");
+    let customerIndex = originalCustomers.findIndex(customer => {
+        return customer.id = customerId;
+    })
+    originalCustomers[customerIndex]["protected"] = false;
+}
+
+function unlockCustomer(event, originalCustomers, customerId) {
+    event.target.classList.toggle("display");
+    event.target.previousElementSibling.classList.toggle("display");
+    let customerIndex = originalCustomers.findIndex(customer => {
+        return customer.id == customerId;
+    })
+    originalCustomers[customerIndex]["protected"] = true;
+}
+
+function duplicateCustomer(originalCustomers, customerId) {
+    let customerIndex = originalCustomers.findIndex(customer => {
+        return customer.id == customerId;
+    })
+
+    let customerToduplicate = originalCustomers[customerIndex];
+    spliceDataInOriginalList(originalCustomers, customerIndex, customerToduplicate)
+    render(originalCustomers);
+    tableRowElement = document.getElementById(customerToduplicate.firstName).nextElementSibling;
+    showUpHiglightedcustomer(tableRowElement);
+}
+
+function getSpesificIndex(originalCustomers, customerId) {
+    form.scrollIntoView();
+    firstNameElement.focus();
+    specificIndex = originalCustomers.findIndex(customer => {
+        return customer.id == customerId;
+    })
+    return specificIndex++;
+}
+
 function showOptions(event) {
-    event.target.classList.add("hidden");
-    event.target.nextElementSibling.classList.remove("hidden");
-    event.target.nextElementSibling.setAttribute("id", "exist")
+    event.stopPropagation()
+    event.target.classList.toggle("hide");
+    ellipsisIconElement = event.target;
+    circleIconElement = event.target.nextElementSibling;
+    event.target.nextElementSibling.classList.toggle("hidden");
 }
 
 function updateCustomer(originalCustomesList, customerId) {
@@ -902,12 +937,18 @@ function updateCustomer(originalCustomesList, customerId) {
 }
 
 function changeCustomerSelectedProperty(customersList, row, customerId) {
-    let customerIndex = customersList.findIndex((customer) => {
+    let customerIndex = customers.findIndex((customer) => {
         return customer.id == customerId;
     })
+    console.log(customerIndex)
+    console.log(customerId)
+    console.log(customers)
+    console.log(customersList)
     if (!row.classList.contains("selected")) {
+        console.log(customersList[customerIndex])
         customersList[customerIndex]["selected"] = true;
     } else {
+        console.log(customersList[customerIndex])
         customersList[customerIndex]["selected"] = false;
     }
     changeStyleForSelectedCustomer(row);
@@ -921,11 +962,11 @@ function deleteSelectedCustomers(originalCustomers) {
         customers = originalCustomers.filter((customer) => {
             return customer.selected !== true;
         })
-        console.log(customers)
-        showAndHidePrintDeleteElement(customers);
+        showAndHidePrintDeleteElement(originalCustomers);
         currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
-        render(customers);
         setCustomersInLocalStorage(customers);
+        render(customers);
+        showAndHidePrintDeleteElement(customers)
     }
 }
 
@@ -1020,13 +1061,23 @@ function sortCustomersByName(originalCustomers, sortOrder) {
 }
 
 function deleteCustomer(originalCustomers, customerId) {
-    if (confirm("are you sure")) {
+    let isProtected = false;
+    let customerIndex = originalCustomers.findIndex((customer) => {
+        return customer.id == customerId;
+    })
+    if (originalCustomers[customerIndex].protected === true) {
+        isProtected = true;
+    }
+
+    if (isProtected) {
+        return;
+    } else if (confirm("are you sure")) {
         customers = originalCustomers.filter(customer => {
             return customer.id != customerId;
         })
         currentPage = rowsPerPage * currentPage > customers.length ? currentPage - 1 : currentPage;
-        console.log(currentPage)
         render(customers);
+        showAndHidePrintDeleteElement(customers)
         setCustomersInLocalStorage(customers);
     }
 }
