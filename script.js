@@ -254,6 +254,7 @@ const printDeletElement = document.getElementById("print-delet-gp");
 const deletSelectedElement = document.getElementById("delet-selected-customers");
 const printSelectedElement = document.getElementById("print")
 const checkAllInput = document.getElementById("check-all");
+let duplicateOrEdit = 1;
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
@@ -342,9 +343,7 @@ function changeCheckAllInputStatus(customersList) {
 
 printSelectedElement.addEventListener("click", () => {
     tableElement.innerHTML = "";
-    let selectedCustomers = customers.filter((customer) => {
-        return customer.selected === true;
-    })
+    let selectedCustomers = customers.filter((customer) => customer.selected === true);
     selectedCustomers.forEach(customer => {
         const row = createElement(customer);
         tableElement.append(row);
@@ -367,13 +366,8 @@ updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
-
-        if (customerToUpdate.selected) {
-            customerData["selected"] = true;
-        } else {
-            customerData["selected"] = false;
-        }
-        updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
+        customerData["selected"] = customerToUpdate.selected ? true : false;
+        updateTable(inputsElements, customerData, customerToUpdateIndex, "update", duplicateOrEdit)
         submitBtn.classList.remove("hide-btn");
         btnGroupElement.classList.remove("btn-group");
         formHeaderElement.innerText = "Add Customer";
@@ -437,10 +431,14 @@ addCustomer.addEventListener("click", () => {
     submitBtn.classList.remove("hide-btn");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
-    form.scrollIntoView();
-    firstNameElement.focus();
+    scrollInPage();
     upDateProgressValue(countValidInputs(inputsElements));
 })
+
+function scrollInPage() {
+    form.scrollIntoView();
+    firstNameElement.focus();
+}
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -811,7 +809,7 @@ function render(customersToRender) {
 }
 
 function createElement(customer) {
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected } = customer;
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected, protected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", firstName);
     let check = "";
@@ -819,13 +817,15 @@ function createElement(customer) {
         row.setAttribute("class", "selected");
         check = "checked";
     }
+    let customerLock = protected ? "" : "display";
+    let customerUnlock = protected ? "display" : "";
     row.innerHTML = `
     <td class="relative">
         <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${firstName},${id})" class="check">
         <i class="fas fa-plus" onclick="getSpesificIndex(customers,${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
-        <i class="fas fa-lock display" onclick="lockCustomer(event,customers,${id})"></i>
-        <i class="fas fa-unlock" onclick="unlockCustomer(event,customers,${id})"></i>
+        <i class="fas fa-lock ${customerLock}" onclick="lockCustomer(event,customers,${id})"></i>
+        <i class="fas fa-unlock ${customerUnlock}" onclick="unlockCustomer(event,customers,${id})"></i>
     </td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
@@ -868,59 +868,29 @@ function createElement(customer) {
 function lockCustomer(event, originalCustomers, customerId) {
     event.target.classList.toggle("display");
     event.target.nextElementSibling.classList.toggle("display");
-    let customerIndex = originalCustomers.findIndex(customer => {
-        return customer.id = customerId;
-    })
+    let customerIndex = originalCustomers.findIndex(customer => customer.id = customerId)
     originalCustomers[customerIndex]["protected"] = false;
 }
 
 function unlockCustomer(event, originalCustomers, customerId) {
     event.target.classList.toggle("display");
     event.target.previousElementSibling.classList.toggle("display");
-    let customerIndex = originalCustomers.findIndex(customer => {
-        return customer.id == customerId;
-    })
+    let customerIndex = originalCustomers.findIndex(customer => customer.id == customerId)
     originalCustomers[customerIndex]["protected"] = true;
 }
 
-function duplicateCustomer(originalCustomers, customerId) {
-    let customerIndex = originalCustomers.findIndex(customer => {
-        return customer.id == customerId;
-    })
-
-    let customerToduplicate = originalCustomers[customerIndex];
-    spliceDataInOriginalList(originalCustomers, customerIndex, customerToduplicate)
-    render(originalCustomers);
-    tableRowElement = document.getElementById(customerToduplicate.firstName).nextElementSibling;
-    showUpHiglightedcustomer(tableRowElement);
-}
-
-function getSpesificIndex(originalCustomers, customerId) {
-    form.scrollIntoView();
-    firstNameElement.focus();
-    specificIndex = originalCustomers.findIndex(customer => {
-        return customer.id == customerId;
-    })
-    return specificIndex++;
-}
-
-function showOptions(event) {
-    event.stopPropagation()
-    event.target.classList.toggle("hide");
-    ellipsisIconElement = event.target;
-    circleIconElement = event.target.nextElementSibling;
-    event.target.nextElementSibling.classList.toggle("hidden");
-}
-
-function updateCustomer(originalCustomesList, customerId) {
+function duplicateCustomer(originalCustomesList, customerId) {
+    duplicateOrEdit = 1;
     customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
-
     formHeaderElement.innerText = "Update Customer";
     form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
     submitBtn.classList.add("hide-btn");
     btnGroupElement.classList.add("btn-group");
+    btnGroupElement.firstElementChild.textContent = "duplicate"
     customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
+    customerToUpdateIndex++;
+    console.log(customerToUpdateIndex)
     originalCustomersListCopy = originalCustomesList.slice();
     originalCustomersListCopy.splice(customerToUpdateIndex, 1);
     firstNameElement.value = firstName;
@@ -934,21 +904,67 @@ function updateCustomer(originalCustomesList, customerId) {
     descriptionElement.value = description;
     checkInputsValidation(originalCustomersListCopy);
     upDateProgressValue(countValidInputs(inputsElements));
+
+}
+
+function getSpesificIndex(originalCustomers, customerId) {
+    scrollInPage();
+    specificIndex = originalCustomers.findIndex(customer => customer.id == customerId)
+    return specificIndex++;
+}
+
+function showOptions(event) {
+    event.stopPropagation()
+    event.target.classList.toggle("hide");
+    ellipsisIconElement = event.target;
+    circleIconElement = event.target.nextElementSibling;
+    event.target.nextElementSibling.classList.toggle("hidden");
+}
+
+function updateCustomer(originalCustomesList, customerId) {
+    let isProtected = isCustomerProtected(originalCustomesList, customerId);
+    duplicateOrEdit = 0;
+    if (isProtected) {
+        return;
+    } else {
+        customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
+        let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
+
+        formHeaderElement.innerText = "Update Customer";
+        form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+        submitBtn.classList.add("hide-btn");
+        btnGroupElement.classList.add("btn-group");
+        btnGroupElement.firstElementChild.textContent = "update"
+        customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
+        originalCustomersListCopy = originalCustomesList.slice();
+        originalCustomersListCopy.splice(customerToUpdateIndex, 1);
+        firstNameElement.value = firstName;
+        lastNameElement.value = lastName;
+        numberElement.value = id;
+        balanceElement.value = balance;
+        rateElement.value = rate;
+        depositElement.value = deposit;
+        currencyElement.value = currency;
+        customerStatusElement.value = status;
+        descriptionElement.value = description;
+        checkInputsValidation(originalCustomersListCopy);
+        upDateProgressValue(countValidInputs(inputsElements));
+    }
+
+}
+
+function isCustomerProtected(originalCustomesList, customerId) {
+    let customerIndex = originalCustomesList.findIndex((customer) => customer.id == customerId);
+    if (originalCustomesList[customerIndex].protected === true) return true;
+    return false;
 }
 
 function changeCustomerSelectedProperty(customersList, row, customerId) {
-    let customerIndex = customers.findIndex((customer) => {
-        return customer.id == customerId;
-    })
-    console.log(customerIndex)
-    console.log(customerId)
-    console.log(customers)
-    console.log(customersList)
+    let customerIndex = customers.findIndex((customer) => customer.id == customerId)
+
     if (!row.classList.contains("selected")) {
-        console.log(customersList[customerIndex])
         customersList[customerIndex]["selected"] = true;
     } else {
-        console.log(customersList[customerIndex])
         customersList[customerIndex]["selected"] = false;
     }
     changeStyleForSelectedCustomer(row);
@@ -960,8 +976,10 @@ function changeCustomerSelectedProperty(customersList, row, customerId) {
 function deleteSelectedCustomers(originalCustomers) {
     if (confirm("are you sure you want to delete all selected customers")) {
         customers = originalCustomers.filter((customer) => {
-            return customer.selected !== true;
+            return customer.selected === false || customer.protected === true;
         })
+        console.log(customers)
+
         showAndHidePrintDeleteElement(originalCustomers);
         currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
         setCustomersInLocalStorage(customers);
@@ -1061,13 +1079,7 @@ function sortCustomersByName(originalCustomers, sortOrder) {
 }
 
 function deleteCustomer(originalCustomers, customerId) {
-    let isProtected = false;
-    let customerIndex = originalCustomers.findIndex((customer) => {
-        return customer.id == customerId;
-    })
-    if (originalCustomers[customerIndex].protected === true) {
-        isProtected = true;
-    }
+    let isProtected = isCustomerProtected(originalCustomers, customerId);
 
     if (isProtected) {
         return;
