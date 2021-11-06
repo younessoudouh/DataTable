@@ -239,6 +239,7 @@ const depositElement = document.getElementById("deposit");
 const addCustomer = document.getElementById("add");
 const notificationElement = document.getElementById("notification");
 const percentElement = document.getElementById("percent");
+const pprogressBarElement = document.getElementById("prog-bar");
 const progressElement = document.getElementById("progress");
 const validationForm = document.getElementById("validation-form");
 const submitBtn = document.getElementById("submit");
@@ -258,10 +259,7 @@ let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
-let tableRowElement;
 let customerToUpdate;
-let customerToUpdateIndex;
-let originalCustomersListCopy;
 let sortBy;
 let specificIndex = 0;
 let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
@@ -275,6 +273,7 @@ function setCustomersInLocalStorageOnce(originalCustomesList) {
         return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
     }
 }
+
 setCustomersInLocalStorageOnce(clients)
 
 let customers = JSON.parse(localStorage.getItem("customers")) ?
@@ -297,6 +296,7 @@ function sortCombined(originalCustomers, sortCombinedOrders) {
 }
 
 function showProgress(progressValue) {
+    pprogressBarElement.classList.remove("hide-element");
     progressElement.style.width = `${progressValue}%`;
     percentElement.textContent = `Progress: ${progressValue} %`;
 }
@@ -312,7 +312,7 @@ function setCustomersInLocalStorage(originalCustomesList) {
 }
 
 bodyElement.addEventListener("click", (e) => {
-    sortModuleElement.classList.add("hide-btn");
+    sortModuleElement.classList.add("hide-element");
 })
 
 checkAllInputElement.addEventListener("change", () => {
@@ -327,7 +327,7 @@ checkAllInputElement.addEventListener("change", () => {
 })
 
 function changeCheckAllInputStatus(customersList) {
-    let isAllChecked = customersList.every(customer => customer.selected === true);
+    let isAllChecked = customersList.every(customer => customer.selected);
     isAllChecked = customersList.length === 0 ? false : isAllChecked;
 
     if (isAllChecked) {
@@ -339,18 +339,18 @@ function changeCheckAllInputStatus(customersList) {
 
 printSelectedElement.addEventListener("click", () => {
     tableElement.innerHTML = "";
-    let selectedCustomers = customers.filter((customer) => customer.selected === true);
+    let selectedCustomers = customers.filter((customer) => customer.selected);
     selectedCustomers.forEach(customer => {
         const row = createElement(customer);
         tableElement.append(row);
     });
-    window.print()
-    render(customers)
+    window.print();
+    render(customers);
 })
 
 filterElement.addEventListener("click", (e) => {
     e.stopPropagation();
-    sortModuleElement.classList.toggle("hide-btn");
+    sortModuleElement.classList.toggle("hide-element");
     sortModuleElement.scrollIntoView();
 })
 
@@ -362,33 +362,51 @@ updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
+        let customerToUpdateIndex = customers.indexOf(customerToUpdate);
 
         if (updateBtn.textContent === "duplicate") {
-            updateTable(inputsElements, customerData, customerToUpdateIndex, "duplicated", 0)
+            customerToUpdateIndex++;
+            updateTable(inputsElements, customerData, customerToUpdateIndex, "duplicated", 0);
+            ToggledisabledInputs(false);
         } else {
-            updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1)
+            updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1);
         }
-        submitBtn.classList.remove("hide-btn");
+        submitBtn.classList.remove("hide-element");
         btnGroupElement.classList.remove("btn-group");
         formHeaderElement.innerText = "Add Customer";
         changeCheckAllInputStatus(customersReadyToRender);
+        pprogressBarElement.classList.add("hide-element");
     }
 
 })
 
+function ToggledisabledInputs(option) {
+    inputsElements.forEach(input => {
+        if (option) {
+            if ((input.name !== "number") && (input.name !== "first-name")) {
+                input.disabled = true;
+            }
+        } else {
+            if ((input.name !== "number") && (input.name !== "first-name")) {
+                input.disabled = false;
+            }
+        }
+    })
+}
+
 cancelBtn.addEventListener("click", () => {
     restInputsValue(inputsElements);
     restInputsStyle(inputsElements);
-    tableRowElement = document.getElementById(customerToUpdate.firstName);
+    let tableRowElement = document.getElementById(customerToUpdate.id);
     showUpHiglightedcustomer(tableRowElement);
-    showNotification(notificationElement, customerToUpdate.firstName, "canceled update");
     upDateProgressValue(countValidInputs(inputsElements));
-    submitBtn.classList.remove("hide-btn");
+    submitBtn.classList.remove("hide-element");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-btn");
+    submitBtn.classList.remove("hide-element");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
+    pprogressBarElement.classList.add("hide-element");
 })
 
 function getCustomerDataFromUser() {
@@ -419,17 +437,17 @@ function getCustomerDataFromUser() {
 }
 
 function valuecapitalize(word) {
-    return word[0].toUpperCase() + word.slice(1).toLowerCase()
+    return word[0].toUpperCase() + word.slice(1).toLowerCase();
 }
 
 addCustomer.addEventListener("click", () => {
     specificIndex = 0;
     restInputsValue(inputsElements);
     restInputsStyle(inputsElements);
-    submitBtn.classList.remove("hide-btn");
+    submitBtn.classList.remove("hide-element");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-btn");
+    submitBtn.classList.remove("hide-element");
     btnGroupElement.classList.remove("btn-group");
     formHeaderElement.innerText = "Add Customer";
     scrollFormInToView();
@@ -449,16 +467,17 @@ form.addEventListener("submit", (e) => {
         let customerData = getCustomerDataFromUser();
         updateTable(inputsElements, customerData, specificIndex, "Add");
         changeCheckAllInputStatus(customersReadyToRender);
+        pprogressBarElement.classList.add("hide-element");
         specificIndex = 0;
     }
 })
 
-function showUpHiglightedcustomer(customerField) {
-    if (customerField !== null) {
-        customerField.scrollIntoView();
-        customerField.classList.add("highlight");
+function showUpHiglightedcustomer(customerRow) {
+    if (customerRow !== null) {
+        customerRow.scrollIntoView();
+        customerRow.classList.add("highlight");
         setTimeout(() => {
-            customerField.classList.remove("highlight");
+            customerRow.classList.remove("highlight");
         }, 3000)
     }
 }
@@ -469,12 +488,13 @@ deletSelectedElement.addEventListener("click", () => {
 
 firstNameElement.addEventListener("input", () => {
     if (btnGroupElement.classList.contains("btn-group")) {
-        firstNameValidity(firstNameElement, originalCustomersListCopy);
+        firstNameValidity(firstNameElement, customersFiltredForUpdate(customers));
     } else {
         firstNameValidity(firstNameElement, customers);
     }
     upDateProgressValue(countValidInputs(inputsElements))
 })
+
 lastNameElement.addEventListener("input", () => {
     lastNameValidity(lastNameElement);
     upDateProgressValue(countValidInputs(inputsElements))
@@ -482,12 +502,13 @@ lastNameElement.addEventListener("input", () => {
 
 numberElement.addEventListener("input", () => {
     if (btnGroupElement.classList.contains("btn-group")) {
-        numberValidity(numberElement, originalCustomersListCopy);
+        numberValidity(numberElement, customersFiltredForUpdate(customers));
     } else {
         numberValidity(numberElement, customers);
     }
     upDateProgressValue(countValidInputs(inputsElements))
 })
+
 rateElement.addEventListener("input", () => {
     ratetValidity(rateElement);
     upDateProgressValue(countValidInputs(inputsElements))
@@ -497,6 +518,7 @@ balanceElement.addEventListener("input", () => {
     balanceValidity(balanceElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
+
 customerStatusElement.addEventListener("input", () => {
     statusValidity(customerStatusElement);
     upDateProgressValue(countValidInputs(inputsElements))
@@ -511,6 +533,7 @@ depositElement.addEventListener("input", () => {
     depositValidity(depositElement);
     upDateProgressValue(countValidInputs(inputsElements))
 })
+
 currencyElement.addEventListener("input", () => {
     currencyValidity(currencyElement);
     upDateProgressValue(countValidInputs(inputsElements))
@@ -519,6 +542,7 @@ currencyElement.addEventListener("input", () => {
 firstNameElement.addEventListener("blur", (e) => {
     if (!e.target.value) firstNameValidity(firstNameElement, customers);
 })
+
 lastNameElement.addEventListener("blur", (e) => {
     if (!e.target.value) lastNameValidity(lastNameElement);
 })
@@ -526,6 +550,7 @@ lastNameElement.addEventListener("blur", (e) => {
 numberElement.addEventListener("blur", (e) => {
     if (!e.target.value) numberValidity(numberElement, customers);
 })
+
 rateElement.addEventListener("blur", (e) => {
     if (!e.target.value) ratetValidity(rateElement);
 })
@@ -533,6 +558,7 @@ rateElement.addEventListener("blur", (e) => {
 balanceElement.addEventListener("blur", (e) => {
     if (!e.target.value) balanceValidity(balanceElement);
 })
+
 customerStatusElement.addEventListener("blur", (e) => {
     if (!e.target.value) statusValidity(customerStatusElement);
 })
@@ -544,22 +570,18 @@ descriptionElement.addEventListener("blur", (e) => {
 depositElement.addEventListener("blur", (e) => {
     if (!e.target.value) depositValidity(depositElement);
 })
+
 currencyElement.addEventListener("blur", (e) => {
     if (!e.target.value) currencyValidity(currencyElement);
 })
 
-function printCustomer(customerId) {
+function printCustomer(originalCustomers, customerId) {
     tableElement.innerHTML = "";
-    let customerIndex = customers.find((customer) => {
-        return customer.id == customerId;
-    })
-    let selectedCustomers = [customerIndex];
-    selectedCustomers.forEach(customer => {
-        const row = createElement(customer);
-        tableElement.append(row);
-    });
+    let customerToPrint = originalCustomers.find((customer) => customer.id == customerId);
+    const row = createElement(customerToPrint);
+    tableElement.append(row);
     window.print()
-    render(customers)
+    render(originalCustomers)
 
 }
 
@@ -578,7 +600,7 @@ function checkInputsValidation(originalCustomers) {
 function firstNameValidity(input, originalCustomers) {
     if (hasValue(input)) {
         return false;
-    } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
+    } else if (checkOnlyLetters(input, /^[a-zA-Z]*$/)) {
         return false;
     } else if (isFirstNameExist(input, originalCustomers)) {
         return false;
@@ -714,7 +736,7 @@ function isNumber(input) {
 }
 
 function checkOnlyLetters(input, regx) {
-    if (input.value.match(regx) === null) {
+    if (!input.value.match(regx)) {
         setErrorForInput(input, `${input.name} should contains only letters`);
         return true;
     }
@@ -732,7 +754,7 @@ function updateTable(inputsList, customerDataFromUser, index, message, deleteCou
     restInputsValue(inputsList);
     restInputsStyle(inputsList);
     render(customers);
-    tableRowElement = document.getElementById(customerDataFromUser.firstName);
+    let tableRowElement = document.getElementById(customerDataFromUser.id);
     showUpHiglightedcustomer(tableRowElement);
     showNotification(notificationElement, customerDataFromUser.firstName, message);
     upDateProgressValue(countValidInputs(inputsList));
@@ -810,17 +832,21 @@ function render(customersToRender) {
 function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected, protected } = customer;
     let row = document.createElement("tr");
-    row.setAttribute("id", firstName);
+    row.setAttribute("id", id);
+
     let check = "";
-    if (customer.selected === true) {
+
+    if (selected) {
         row.setAttribute("class", "selected");
         check = "checked";
     }
+
     let customerLock = protected ? "" : "display";
     let customerUnlock = protected ? "display" : "";
+
     row.innerHTML = `
     <td class="relative">
-        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${firstName},${id})" class="check">
+        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${id})" class="check">
         <i class="fas fa-plus" onclick="getSpesificIndex(customers,${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
         <i class="fas fa-lock ${customerLock}" onclick="lockCustomer(event,customers,${id})"></i>
@@ -855,7 +881,7 @@ function createElement(customer) {
             <i class="fas fa-ellipsis-v" onClick="showOptions(event)"></i>
             <i class="far fa-times-circle circle hidden">
                 <div class="options">                  
-                    <i class="fas fa-print" onclick="printCustomer(${id})"></i>    
+                    <i class="fas fa-print" onclick="printCustomer(customers,${id})"></i>    
                 </div>
             </i>
         </div>
@@ -879,16 +905,22 @@ function unlockCustomer(event, originalCustomers, customerId) {
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
+    formHeaderElement.innerText = "duplicate Customer";
+    form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    submitBtn.classList.add("hide-element");
+    btnGroupElement.classList.add("btn-group");
+    btnGroupElement.firstElementChild.textContent = "duplicate";
+    fillInputsField(originalCustomesList, customerId)
+    ToggledisabledInputs(true);
+    checkInputsValidation(originalCustomesList);
+    upDateProgressValue(countValidInputs(inputsElements));
+
+}
+
+function fillInputsField(originalCustomesList, customerId) {
     customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
-    formHeaderElement.innerText = "Update Customer";
-    form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    submitBtn.classList.add("hide-btn");
-    btnGroupElement.classList.add("btn-group");
-    btnGroupElement.firstElementChild.textContent = "duplicate"
-    customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
-    customerToUpdateIndex++;
-    originalCustomersListCopy = originalCustomesList.slice();
+
     firstNameElement.value = firstName;
     lastNameElement.value = lastName;
     numberElement.value = id;
@@ -898,14 +930,11 @@ function duplicateCustomer(originalCustomesList, customerId) {
     currencyElement.value = currency;
     customerStatusElement.value = status;
     descriptionElement.value = description;
-    checkInputsValidation(originalCustomersListCopy);
-    upDateProgressValue(countValidInputs(inputsElements));
-
 }
 
 function getSpesificIndex(originalCustomers, customerId) {
     scrollFormInToView();
-    specificIndex = originalCustomers.findIndex(customer => customer.id == customerId)
+    specificIndex = originalCustomers.findIndex(customer => customer.id == customerId);
     return specificIndex++;
 }
 
@@ -922,30 +951,20 @@ function updateCustomer(originalCustomesList, customerId) {
     if (isProtected) {
         return;
     } else {
-        customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
-        let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
-
         formHeaderElement.innerText = "Update Customer";
         form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-        submitBtn.classList.add("hide-btn");
+        submitBtn.classList.add("hide-element");
         btnGroupElement.classList.add("btn-group");
-        btnGroupElement.firstElementChild.textContent = "update"
-        customerToUpdateIndex = originalCustomesList.indexOf(customerToUpdate);
-        originalCustomersListCopy = originalCustomesList.slice();
-        originalCustomersListCopy.splice(customerToUpdateIndex, 1);
-        firstNameElement.value = firstName;
-        lastNameElement.value = lastName;
-        numberElement.value = id;
-        balanceElement.value = balance;
-        rateElement.value = rate;
-        depositElement.value = deposit;
-        currencyElement.value = currency;
-        customerStatusElement.value = status;
-        descriptionElement.value = description;
-        checkInputsValidation(originalCustomersListCopy);
+        btnGroupElement.firstElementChild.textContent = "update";
+        fillInputsField(originalCustomesList, customerId);
+        checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
         upDateProgressValue(countValidInputs(inputsElements));
     }
 
+}
+
+function customersFiltredForUpdate(originalCustomesList) {
+    return originalCustomesList.filter(customer => customer.id != customerToUpdate.id);
 }
 
 function isCustomerProtected(originalCustomesList, customerId) {
@@ -954,10 +973,11 @@ function isCustomerProtected(originalCustomesList, customerId) {
     return false;
 }
 
-function changeCustomerSelectedProperty(customersList, row, customerId) {
+function changeCustomerSelectedProperty(customersList, customerId) {
+    let customerRow = document.getElementById(customerId);
     let customerIndex = customers.findIndex((customer) => customer.id == customerId)
-    customersList[customerIndex]["selected"] = row.classList.contains("selected") ? false : true;
-    changeStyleForSelectedCustomer(row);
+    customersList[customerIndex]["selected"] = customerRow.classList.contains("selected") ? false : true;
+    changeStyleForSelectedCustomer(customerRow);
     showAndHidePrintDeleteElement(customersList);
     changeCheckAllInputStatus(customersList)
 
@@ -965,9 +985,7 @@ function changeCustomerSelectedProperty(customersList, row, customerId) {
 
 function deleteSelectedCustomers(originalCustomers) {
     if (confirm("are you sure you want to delete all selected customers")) {
-        customers = originalCustomers.filter((customer) => customer.selected === false || customer.protected === true)
-
-        showAndHidePrintDeleteElement(originalCustomers);
+        customers = originalCustomers.filter((customer) => customer.selected === false || customer.protected === true);
         currentPage = rowsPerPage * currentPage > customers.length ? Math.round(customers.length / rowsPerPage) : currentPage;
         setCustomersInLocalStorage(customers);
         render(customers);
@@ -977,11 +995,7 @@ function deleteSelectedCustomers(originalCustomers) {
 }
 
 function showAndHidePrintDeleteElement(originalCustomers) {
-    if (countSelectedCustomers(originalCustomers) > 1) {
-        printDeletElement.classList.remove("hidden")
-    } else {
-        printDeletElement.classList.add("hidden")
-    }
+    countSelectedCustomers(originalCustomers) > 1 ? printDeletElement.classList.remove("hidden") : printDeletElement.classList.add("hidden");
 }
 
 function changeStyleForSelectedCustomer(row) {
@@ -989,8 +1003,7 @@ function changeStyleForSelectedCustomer(row) {
 }
 
 function countSelectedCustomers(originalCustomers) {
-    let selectedCustomers = originalCustomers.filter((customer) => customer.selected === true)
-    return selectedCustomers.length;
+    return originalCustomers.filter((customer) => customer.selected === true).length;
 }
 
 function checkBalance(amount) {

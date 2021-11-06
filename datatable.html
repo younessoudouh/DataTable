@@ -18,7 +18,7 @@
             <i class="fas fa-print print-selected" id="print"></i>
             <i class="far fa-trash-alt delete-selected" id="delet-selected-customers"></i>
         </div>
-        <div class="progress-bar">
+        <div class="progress-bar hide-element" id="prog-bar">
             <div class="progress" id="progress"></div>
             <div class="percent" id="percent">Progress: 0%</div>
         </div>
@@ -84,7 +84,7 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <button class="btn-submit-update show-btn active" id="submit" type="submit">Submit</button>
-                    <div class="hide-btn" id="btn-group">
+                    <div class="hide-element" id="btn-group">
                         <button class="btn-submit-update active" id="update" type="button">update</button>
                         <button class="btn-submit-update active" id="cancel" type="button">Cancel</button>
                     </div>
@@ -95,7 +95,7 @@
             <div class="filter-side">
                 <div class="filter">
                     <img src="images/Filter.png" alt="filter" id="filter" class="img-filter">
-                    <div class="sort hide-btn" id="sort-module">
+                    <div class="sort hide-element" id="sort-module">
                         <div class="sort-by-name">
                             <h3 class="sort-head">sort by:</h3>
                             <div class="option-sort option">
