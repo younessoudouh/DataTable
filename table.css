@@ -406,16 +406,13 @@ label {
 
 .delete-selected,
 .print-selected {
-    position: fixed;
-    bottom: 20%;
-    left: 2%;
     font-size: 30px;
-    z-index: 5000;
-    color: #2E3B52;
+    color: #6f747c;
 }
 
-.print-selected {
-    margin-left: 40px;
+.print-delet {
+    display: flex;
+    gap: 10px;
 }
 
 @media print {

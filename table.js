@@ -464,6 +464,7 @@ function unlockCustomer(originalCustomers, customerId) {
 
 function getSpesificIndex(originalCustomers, customerId) {
     let index = originalCustomers.findIndex(customer => customer.id == customerId)
+    index++;
     localStorage.setItem("spIndex", index);
     window.location = "form.html";
     // restInputsValue(inputsElements);
@@ -510,15 +511,18 @@ function updateCustomer(originalCustomesList, customerId) {
     if (isProtected) {
         return;
     } else {
-        window.location = "form.html"
-            // formHeaderElement.innerText = "Update Customer";
-            // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-            // submitBtn.classList.add("hide-element");
-            // btnGroupElement.classList.add("btn-group");
-            // btnGroupElement.firstElementChild.textContent = "update";
-            // fillInputsField(originalCustomesList, customerId);
-            // checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
-            // upDateProgressValue(countValidInputs(inputsElements));
+        window.location = "form.html";
+        let index = originalCustomesList.findIndex(customer => customer.id == customerId);
+        localStorage.setItem("indexx", index);
+        localStorage.setItem("update", true);
+        // formHeaderElement.innerText = "Update Customer";
+        // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+        // submitBtn.classList.add("hide-element");
+        // btnGroupElement.classList.add("btn-group");
+        // btnGroupElement.firstElementChild.textContent = "update";
+        // fillInputsField(originalCustomesList, customerId);
+        // checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
+        // upDateProgressValue(countValidInputs(inputsElements));
     }
 }
 
@@ -657,17 +661,26 @@ previousPageElement.addEventListener("click", () => {
 
 window.onload = function() {
     if (localStorage.getItem("id")) {
-        let id = localStorage.getItem("id")
+        let id = localStorage.getItem("id");
         let tableRowElement = document.getElementById(id);
         showUpHiglightedcustomer(tableRowElement);
         showNotification(notificationElement, "", "add");
-        localStorage.removeItem("id")
+        localStorage.removeItem("id");
     } else if (localStorage.getItem("duplicate")) {
         let index = localStorage.getItem("index");
         index++
         let tableRowElement = document.getElementById(customers[index].id);
+        console.log(localStorage.getItem("index"))
         showUpHiglightedcustomer(tableRowElement);
         showNotification(notificationElement, "", "duplicated");
-        localStorage.removeItem("duplicate")
+        localStorage.removeItem("duplicate");
+        localStorage.removeItem("index");
+    } else if (localStorage.getItem("update")) {
+        let index = localStorage.getItem("indexx");
+        let tableRowElement = document.getElementById(customers[index].id);
+        showUpHiglightedcustomer(tableRowElement);
+        showNotification(notificationElement, "", "update");
+        localStorage.removeItem("update");
+        localStorage.removeItem("indexx");
     }
 };

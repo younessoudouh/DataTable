@@ -45,52 +45,40 @@ function setCustomersInLocalStorage(originalCustomesList) {
 
 updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
-    console.log(isAllInputsValid)
+
     if (isAllInputsValid) {
         let customerData = getCustomerDataFromUser();
         let customerToUpdateIndex = customers.indexOf(customerToUpdate);
 
         if (localStorage.getItem("duplicate")) {
-            let index = localStorage.getItem("index");
-            index++;
-            customers.splice(index, 0, getCustomerDataFromUser());
+            customerToUpdateIndex++;
+            customers.splice(customerToUpdateIndex, 0, customerData);
             setCustomersInLocalStorage(customers);
             window.location = "table.html";
 
-        } else {
-            updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1);
+        } else if (localStorage.getItem("update")) {
+            customers.splice(customerToUpdateIndex, 1, customerData);
+            setCustomersInLocalStorage(customers);
+            window.location = "table.html";
         }
     }
 
 })
 
-function ToggledisabledInputs(option) {
+function ToggledisabledInputs() {
     inputsElements.forEach(input => {
-        if (option) {
-            if ((input.name !== "number") && (input.name !== "first-name")) {
-                input.disabled = true;
-            }
-        } else {
-            if ((input.name !== "number") && (input.name !== "first-name")) {
-                input.disabled = false;
-            }
+        if ((input.name !== "number") && (input.name !== "first-name")) {
+            input.disabled = true;
         }
     })
 }
 
 cancelBtn.addEventListener("click", () => {
-    restInputsValue(inputsElements);
-    restInputsStyle(inputsElements);
-    let tableRowElement = document.getElementById(customerToUpdate.id);
-    showUpHiglightedcustomer(tableRowElement);
-    upDateProgressValue(countValidInputs(inputsElements));
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    progressBarElement.classList.add("hide-element");
+    localStorage.removeItem("id");
+    localStorage.removeItem("index");
+    localStorage.removeItem("duplicate");
+    localStorage.removeItem("update");
+    window.location = "table.html";
 })
 
 function getCustomerDataFromUser() {
@@ -132,16 +120,14 @@ form.addEventListener("submit", (e) => {
         if (localStorage.getItem("spIndex")) {
             let customerData = getCustomerDataFromUser();
             let index = localStorage.getItem("spIndex");
-            console.log(localStorage.getItem("spIndex"))
+            console.log(localStorage.getItem("spIndex"));
             updateTable(inputsElements, customerData, index, "Add");
             window.location = "table.html"
         } else {
             let customerData = getCustomerDataFromUser();
-
             updateTable(inputsElements, customerData, 0, "Add");
             window.location = "table.html"
         }
-        // specificIndex = 0;
     }
 })
 
@@ -153,24 +139,6 @@ function updateTable(inputsList, customerDataFromUser, index, message, deleteCou
     spliceDataInOriginalList(customers, index, customerDataFromUser, deleteCount)
     setCustomersInLocalStorage(customers);
     localStorage.setItem("id", customerDataFromUser.id)
-        // restInputsValue(inputsList);
-        // restInputsStyle(inputsList);
-        // render(customers);
-        // let tableRowElement = document.getElementById(customerDataFromUser.id);
-        // showUpHiglightedcustomer(tableRowElement);
-        // showNotification(notificationElement, customerDataFromUser.firstName, message);
-        // upDateProgressValue(countValidInputs(inputsList));
-}
-
-function changeCheckAllInputStatus(customersList) {
-    let isAllChecked = customersList.every(customer => customer.selected);
-    isAllChecked = customersList.length === 0 ? false : isAllChecked;
-
-    if (isAllChecked) {
-        checkAllInputElement.checked = true;
-    } else {
-        checkAllInputElement.checked = false;
-    }
 }
 
 firstNameElement.addEventListener("input", () => {
@@ -457,8 +425,8 @@ function setSuccessForInput(input) {
     successIcon.classList.add("show");
 }
 
-function fillInputsField(customer) {
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customer;
+function fillInputsField(customerData) {
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerData;
 
     firstNameElement.value = firstName;
     lastNameElement.value = lastName;
@@ -485,8 +453,18 @@ window.onload = function() {
         let index = localStorage.getItem("index");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
+        ToggledisabledInputs();
         checkInputsValidation(customers);
         upDateProgressValue(countValidInputs(inputsElements));
-        console.log(customerToUpdate.id)
+    } else if (localStorage.getItem("update")) {
+        formHeaderElement.innerText = "update Customer";
+        submitBtn.classList.add("hide-element");
+        btnGroupElement.classList.add("btn-group");
+        btnGroupElement.classList.remove("hide-element");
+        let index = localStorage.getItem("indexx");
+        customerToUpdate = customers[index];
+        fillInputsField(customerToUpdate);
+        checkInputsValidation(customersFiltredForUpdate(customers, customerToUpdate));
+        upDateProgressValue(countValidInputs(inputsElements));
     }
 };
