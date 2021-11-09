@@ -244,104 +244,6 @@ tbody tr:hover {
     box-shadow: inset 2px 2px 3px #7D90B2, inset -2px -2px 3px #7D90B2;
 }
 
-.validation-form {
-    padding: 30px;
-    background-color: var(--stripes);
-    position: relative;
-    z-index: 1;
-}
-
-form {
-    width: 30%;
-    margin: auto;
-}
-
-.form-container {
-    border-bottom: 1px solid var(--primary-color);
-}
-
-.add-customer-input {
-    border: 0;
-    background: #DAE1EC;
-    outline: none;
-    color: var(--primary-color);
-    display: block;
-    margin-top: 10px;
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.add-customer-input::placeholder {
-    font-size: var(--font-primary);
-    color: var(--primary-color);
-    font-family: inherit;
-}
-
-.add-customer {
-    margin-bottom: 10px;
-    color: #7D90B2;
-    text-align: center;
-}
-
-h2 {
-    text-align: center;
-    color: #7D90B2;
-    margin-top: 10px;
-}
-
-.btn-submit-update {
-    display: block;
-    width: 50%;
-    margin: 10px auto;
-    font-size: 18px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all .5s;
-}
-
-.btn-submit-update:hover,
-.add:hover {
-    background: rgb(2, 71, 190);
-}
-
-.error {
-    border: 1px solid var(--negative);
-}
-
-.success {
-    border: 1px solid var(--positive);
-}
-
-input.error+small,
-textarea.error+small,
-select.error+small {
-    color: var(--negative);
-    visibility: visible;
-}
-
-textarea.success+small,
-input.success+small,
-select.success+small {
-    visibility: hidden;
-}
-
-.fa-check-circle {
-    color: rgb(0, 128, 107);
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    visibility: hidden;
-}
-
-form>div {
-    position: relative;
-}
-
 .add {
     max-width: 30%;
     transition: all .5s;
@@ -413,35 +315,6 @@ form>div {
     transform: scale(1.2);
 }
 
-.progress-bar {
-    width: 450px;
-    height: 25px;
-    background-color: #DAE1EC;
-    border-radius: 10px;
-    margin: auto;
-    overflow: hidden;
-    position: fixed;
-    z-index: 600;
-    left: 50%;
-    transform: translate(-50%);
-}
-
-.progress {
-    background-color: rgb(24, 170, 73);
-    height: 100%;
-    width: 0;
-    transition: all 1s;
-}
-
-.percent {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 16px;
-    font-weight: 500;
-}
-
 .flex {
     display: flex;
     gap: 12px;
@@ -468,17 +341,8 @@ form>div {
     box-shadow: inset 2px 2px 3px #7D90B2, inset -2px -2px 3px #7D90B2;
 }
 
-.show-btn {
-    display: block;
-}
-
-.hide-btn {
+.hide-element {
     display: none;
-}
-
-.btn-group {
-    display: flex;
-    gap: 5px;
 }
 
 .fa-trash-alt:hover,
@@ -554,29 +418,6 @@ label {
     margin-left: 40px;
 }
 
-.confirm {
-    height: 100vh;
-    width: 100%;
-    position: absolute;
-    background-color: rgb(211, 228, 222);
-    filter: blur(1px);
-    z-index: 6000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-}
-
-.confirm-content {
-    text-align: center;
-    width: 200px;
-    height: 100px;
-    color: #0b3c91;
-    text-transform: uppercase;
-    background-color: rgb(220, 230, 226);
-    opacity: 1;
-}
-
 @media print {
     .inactive {
         border: none;
@@ -622,19 +463,17 @@ label {
 .fa-unlock {
     position: absolute;
     bottom: 5%;
-    left: 10%;
     color: #0A65FF;
     padding: 1px;
     visibility: hidden;
 }
 
 .fa-copy {
-    left: 50%;
+    left: 75%;
 }
 
-.fa-lock,
-.fa-unlock {
-    left: 90%;
+.fa-plus {
+    left: 0%;
 }
 
 .relative {
@@ -643,23 +482,30 @@ label {
 
 tbody tr:hover .fa-plus,
 tbody tr:hover .fa-copy,
-tbody tr:hover .fa-lock,
-tbody tr:hover .fa-unlock {
+tbody tr:hover .fa-lock.display,
+tbody tr:hover .fa-unlock.display {
     visibility: visible;
 }
 
 tbody tr.selected .fa-plus,
 tbody tr.selected .fa-copy,
-tbody tr.selected .fa-lock,
 tbody tr.selected .fa-unlock {
     color: #2E3B52;
 }
 
+.fa-lock {
+    color: #2E3B52;
+}
+
 .fa-copy:hover,
-.fa-plus:hover,
+.fa-plus:hover {
+    transform: scale(1.2);
+}
+
 .fa-lock:hover,
 .fa-unlock:hover {
-    transform: scale(1.2);
+    left: 50%;
+    transform: translateX(-50%) scale(1.2);
 }
 
 .options i {
@@ -699,5 +545,7 @@ tbody tr.selected .fa-unlock {
 }
 
 .display {
-    display: none!important;
+    visibility: visible;
+    left: 50%;
+    transform: translateX(-50%);
 }

@@ -226,27 +226,7 @@ const selectElement = document.getElementById("select");
 const displayedCustomerElement = document.getElementById("displayed-customer");
 const previousPageElement = document.getElementById("prevouis-page");
 const nextPageElement = document.getElementById("next-page");
-const firstNameElement = document.getElementById("first-name");
-const lastNameElement = document.getElementById("last-name");
-const descriptionElement = document.getElementById("description");
-const balanceElement = document.getElementById("balance");
-const rateElement = document.getElementById("rate");
-const currencyElement = document.getElementById("currency");
-const customerStatusElement = document.getElementById("customer-status");
-const form = document.getElementById("form");
-const numberElement = document.getElementById("number");
-const depositElement = document.getElementById("deposit");
-const addCustomer = document.getElementById("add");
 const notificationElement = document.getElementById("notification");
-const percentElement = document.getElementById("percent");
-const pprogressBarElement = document.getElementById("prog-bar");
-const progressElement = document.getElementById("progress");
-const validationForm = document.getElementById("validation-form");
-const submitBtn = document.getElementById("submit");
-const updateBtn = document.getElementById("update");
-const formHeaderElement = document.getElementById("form-header");
-const btnGroupElement = document.getElementById("btn-group");
-const cancelBtn = document.getElementById("cancel");
 const filterElement = document.getElementById("filter");
 const sortModuleElement = document.getElementById("sort-module");
 const radioInputsElements = document.querySelectorAll("input[type='radio']");
@@ -255,18 +235,13 @@ const printDeletElement = document.getElementById("print-delet-gp");
 const deletSelectedElement = document.getElementById("delet-selected-customers");
 const printSelectedElement = document.getElementById("print")
 const checkAllInputElement = document.getElementById("check-all");
+const addCustomer = document.getElementById("add");
 let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
-let customerToUpdate;
 let sortBy;
 let specificIndex = 0;
-let inputsElements = [currencyElement, customerStatusElement, descriptionElement, depositElement, firstNameElement, rateElement, lastNameElement, balanceElement, numberElement];
-
-function countValidInputs(inputs) {
-    return inputs.filter(input => input.classList.contains("success")).length;
-}
 
 function setCustomersInLocalStorageOnce(originalCustomesList) {
     if (JSON.parse(localStorage.getItem("customers")) === null) {
@@ -274,11 +249,9 @@ function setCustomersInLocalStorageOnce(originalCustomesList) {
     }
 }
 
-setCustomersInLocalStorageOnce(clients)
+setCustomersInLocalStorageOnce(clients);
 
-let customers = JSON.parse(localStorage.getItem("customers")) ?
-    JSON.parse(localStorage.getItem("customers"))
-    .map(customer => Object.assign(customer, { "selected": false, "protected": false })) : [];
+let customers = JSON.parse(localStorage.getItem("customers")) ? JSON.parse(localStorage.getItem("customers")).map(customer => Object.assign(customer, { "selected": false })) : [];
 
 render(customers);
 
@@ -295,18 +268,6 @@ function sortCombined(originalCustomers, sortCombinedOrders) {
     return sortCustomersByStatus(sortedByNameOption, sortCombinedOrders[1]);
 }
 
-function showProgress(progressValue) {
-    pprogressBarElement.classList.remove("hide-element");
-    progressElement.style.width = `${progressValue}%`;
-    percentElement.textContent = `Progress: ${progressValue} %`;
-}
-
-function upDateProgressValue(validInputs) {
-    let progress = (100 / 9) * validInputs;
-    progress = Math.round(progress);
-    showProgress(progress);
-}
-
 function setCustomersInLocalStorage(originalCustomesList) {
     return localStorage.setItem("customers", JSON.stringify(originalCustomesList));
 }
@@ -321,20 +282,14 @@ checkAllInputElement.addEventListener("change", () => {
     } else {
         customersReadyToRender = customersReadyToRender.map(customer => Object.assign(customer, { "selected": false }));
     }
-    showAndHidePrintDeleteElement(customers)
-    changeCheckAllInputStatus(customersReadyToRender);
-    render(customers)
+    render(customers);
 })
 
 function changeCheckAllInputStatus(customersList) {
     let isAllChecked = customersList.every(customer => customer.selected);
     isAllChecked = customersList.length === 0 ? false : isAllChecked;
+    checkAllInputElement.checked = isAllChecked ? true : false;
 
-    if (isAllChecked) {
-        checkAllInputElement.checked = true;
-    } else {
-        checkAllInputElement.checked = false;
-    }
 }
 
 printSelectedElement.addEventListener("click", () => {
@@ -358,118 +313,8 @@ sortModuleElement.addEventListener("click", (e) => {
     e.stopPropagation();
 })
 
-updateBtn.addEventListener("click", () => {
-    let isAllInputsValid = isInputsValiditySuccess(inputsElements);
-    if (isAllInputsValid) {
-        let customerData = getCustomerDataFromUser();
-        let customerToUpdateIndex = customers.indexOf(customerToUpdate);
-
-        if (updateBtn.textContent === "duplicate") {
-            customerToUpdateIndex++;
-            updateTable(inputsElements, customerData, customerToUpdateIndex, "duplicated", 0);
-            ToggledisabledInputs(false);
-        } else {
-            updateTable(inputsElements, customerData, customerToUpdateIndex, "update", 1);
-        }
-        submitBtn.classList.remove("hide-element");
-        btnGroupElement.classList.remove("btn-group");
-        formHeaderElement.innerText = "Add Customer";
-        changeCheckAllInputStatus(customersReadyToRender);
-        pprogressBarElement.classList.add("hide-element");
-    }
-
-})
-
-function ToggledisabledInputs(option) {
-    inputsElements.forEach(input => {
-        if (option) {
-            if ((input.name !== "number") && (input.name !== "first-name")) {
-                input.disabled = true;
-            }
-        } else {
-            if ((input.name !== "number") && (input.name !== "first-name")) {
-                input.disabled = false;
-            }
-        }
-    })
-}
-
-cancelBtn.addEventListener("click", () => {
-    restInputsValue(inputsElements);
-    restInputsStyle(inputsElements);
-    let tableRowElement = document.getElementById(customerToUpdate.id);
-    showUpHiglightedcustomer(tableRowElement);
-    upDateProgressValue(countValidInputs(inputsElements));
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    pprogressBarElement.classList.add("hide-element");
-})
-
-function getCustomerDataFromUser() {
-    let firstName = firstNameElement.value.trim() !== "" ?
-        valuecapitalize(firstNameElement.value) :
-        firstNameElement.value;
-    let lastName = lastNameElement.value.trim() !== "" ?
-        valuecapitalize(lastNameElement.value) :
-        lastNameElement.value;
-    let id = numberElement.value;
-    let description = descriptionElement.value;
-    let rate = rateElement.value;
-    let balance = balanceElement.value;
-    let status = customerStatusElement.value;
-    let deposit = depositElement.value;
-    let currency = currencyElement.value;
-    return {
-        currency,
-        rate,
-        firstName,
-        id,
-        lastName,
-        description,
-        balance,
-        deposit,
-        status
-    };
-}
-
-function valuecapitalize(word) {
-    return word[0].toUpperCase() + word.slice(1).toLowerCase();
-}
-
 addCustomer.addEventListener("click", () => {
-    specificIndex = 0;
-    restInputsValue(inputsElements);
-    restInputsStyle(inputsElements);
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    scrollFormInToView();
-    upDateProgressValue(countValidInputs(inputsElements));
-})
-
-function scrollFormInToView() {
-    form.scrollIntoView();
-    firstNameElement.focus();
-}
-
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    checkInputsValidation(customers);
-    let isAllInputsValid = isInputsValiditySuccess(inputsElements);
-    if (isAllInputsValid) {
-        let customerData = getCustomerDataFromUser();
-        updateTable(inputsElements, customerData, specificIndex, "Add");
-        changeCheckAllInputStatus(customersReadyToRender);
-        pprogressBarElement.classList.add("hide-element");
-        specificIndex = 0;
-    }
+    window.location = "form.html";
 })
 
 function showUpHiglightedcustomer(customerRow) {
@@ -486,95 +331,6 @@ deletSelectedElement.addEventListener("click", () => {
     deleteSelectedCustomers(customers);
 })
 
-firstNameElement.addEventListener("input", () => {
-    if (btnGroupElement.classList.contains("btn-group")) {
-        firstNameValidity(firstNameElement, customersFiltredForUpdate(customers));
-    } else {
-        firstNameValidity(firstNameElement, customers);
-    }
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-lastNameElement.addEventListener("input", () => {
-    lastNameValidity(lastNameElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-numberElement.addEventListener("input", () => {
-    if (btnGroupElement.classList.contains("btn-group")) {
-        numberValidity(numberElement, customersFiltredForUpdate(customers));
-    } else {
-        numberValidity(numberElement, customers);
-    }
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-rateElement.addEventListener("input", () => {
-    ratetValidity(rateElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-balanceElement.addEventListener("input", () => {
-    balanceValidity(balanceElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-customerStatusElement.addEventListener("input", () => {
-    statusValidity(customerStatusElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-descriptionElement.addEventListener("input", () => {
-    descriptionValidity(descriptionElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-depositElement.addEventListener("input", () => {
-    depositValidity(depositElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-currencyElement.addEventListener("input", () => {
-    currencyValidity(currencyElement);
-    upDateProgressValue(countValidInputs(inputsElements))
-})
-
-firstNameElement.addEventListener("blur", (e) => {
-    if (!e.target.value) firstNameValidity(firstNameElement, customers);
-})
-
-lastNameElement.addEventListener("blur", (e) => {
-    if (!e.target.value) lastNameValidity(lastNameElement);
-})
-
-numberElement.addEventListener("blur", (e) => {
-    if (!e.target.value) numberValidity(numberElement, customers);
-})
-
-rateElement.addEventListener("blur", (e) => {
-    if (!e.target.value) ratetValidity(rateElement);
-})
-
-balanceElement.addEventListener("blur", (e) => {
-    if (!e.target.value) balanceValidity(balanceElement);
-})
-
-customerStatusElement.addEventListener("blur", (e) => {
-    if (!e.target.value) statusValidity(customerStatusElement);
-})
-
-descriptionElement.addEventListener("blur", (e) => {
-    if (!e.target.value) descriptionValidity(descriptionElement);
-})
-
-depositElement.addEventListener("blur", (e) => {
-    if (!e.target.value) depositValidity(depositElement);
-})
-
-currencyElement.addEventListener("blur", (e) => {
-    if (!e.target.value) currencyValidity(currencyElement);
-})
-
 function printCustomer(originalCustomers, customerId) {
     tableElement.innerHTML = "";
     let customerToPrint = originalCustomers.find((customer) => customer.id == customerId);
@@ -583,169 +339,6 @@ function printCustomer(originalCustomers, customerId) {
     window.print()
     render(originalCustomers)
 
-}
-
-function checkInputsValidation(originalCustomers) {
-    firstNameValidity(firstNameElement, originalCustomers);
-    lastNameValidity(lastNameElement);
-    descriptionValidity(descriptionElement);
-    statusValidity(customerStatusElement);
-    currencyValidity(currencyElement);
-    numberValidity(numberElement, originalCustomers);
-    depositValidity(depositElement);
-    ratetValidity(rateElement);
-    balanceValidity(balanceElement);
-}
-
-function firstNameValidity(input, originalCustomers) {
-    if (hasValue(input)) {
-        return false;
-    } else if (checkOnlyLetters(input, /^[a-zA-Z]*$/)) {
-        return false;
-    } else if (isFirstNameExist(input, originalCustomers)) {
-        return false;
-    } else {
-        return true
-    }
-}
-
-function numberValidity(input, originalCustomers) {
-    if (hasValue(input)) {
-        return false;
-    } else if (isNumber(input)) {
-        return false
-    } else if (validLength(input)) {
-        return false;
-    } else if (isNumberExist(input, originalCustomers)) {
-        return false;
-    }
-    return true;
-}
-
-function statusValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    }
-    return true;
-}
-
-function depositValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (isNumber(input)) {
-        return false;
-    }
-    return true;
-}
-
-function ratetValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (isNumber(input)) {
-        return false;
-    }
-    return true;
-}
-
-function balanceValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (isNumber(input)) {
-        return false;
-    }
-    return true;
-}
-
-function currencyValidity(input) {
-    if (hasValue(input)) {
-        setErrorForInput(input, `should select ${input.name}`);
-        return false;
-    }
-    setSuccessForInput(input);
-    return true;
-}
-
-function descriptionValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (validLength(input)) {
-        return false;
-    }
-    return true
-}
-
-function lastNameValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
-        return false;
-    } else {
-        return true
-    }
-}
-
-function hasValue(input) {
-    if (!input.value.trim()) {
-        setErrorForInput(input, `${input.name} can't be blanck`);
-        return true;
-    }
-    setSuccessForInput(input)
-    return false;
-}
-
-function validLength(input) {
-    if (input.value.length < 10) {
-        if (input.name === "number") {
-            setErrorForInput(input, `${input.name} should be 10 digits`);
-        } else {
-            setErrorForInput(input, `${input.name} should at least have 10 characters`);
-        }
-        return true;
-    }
-    setSuccessForInput(input);
-    return false;
-}
-
-function isNumberExist(input, originalCustomers) {
-    let isExist = originalCustomers.some(customer => customer.id == input.value);
-    if (isExist) {
-        setErrorForInput(input, `${input.name} already exist`);
-        return true;
-    }
-    setSuccessForInput(input)
-    return false;
-}
-
-function isFirstNameExist(input, originalCustomers) {
-    let isExist = originalCustomers.some(customer => customer.firstName.toLowerCase() === input.value.toLowerCase());
-    if (isExist) {
-        setErrorForInput(input, `${input.name} already exist`);
-        return true;
-    }
-    setSuccessForInput(input);
-    return false;
-}
-
-function isNumber(input) {
-    if (isNaN(input.value)) {
-        setErrorForInput(input, `${input.name} should be numbers`);
-        return true
-    }
-    setSuccessForInput(input);
-    return false
-}
-
-function checkOnlyLetters(input, regx) {
-    if (!input.value.match(regx)) {
-        setErrorForInput(input, `${input.name} should contains only letters`);
-        return true;
-    }
-    setSuccessForInput(input)
-    return false;
-}
-
-function isInputsValiditySuccess(inputsList) {
-    return inputsList.every(input => input.classList.contains("success"))
 }
 
 function updateTable(inputsList, customerDataFromUser, index, message, deleteCount) {
@@ -760,25 +353,6 @@ function updateTable(inputsList, customerDataFromUser, index, message, deleteCou
     upDateProgressValue(countValidInputs(inputsList));
 }
 
-function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser, deleteCount = 0) {
-    originalCustomesList.splice(customerIndex, deleteCount, customerDataFromUser)
-}
-
-function restInputsValue(inputs) {
-    inputs.forEach(input => input.value = "");
-    customerStatusElement.selectedIndex = 0;
-    currencyElement.selectedIndex = 0;
-}
-
-function restInputsStyle(inputs) {
-    inputs.forEach((input) => {
-        input.classList.remove("success", "error");
-        input.nextElementSibling.innerHTML = "";
-        //set success Icon visibility hidden
-        input.nextElementSibling.nextElementSibling.classList.remove("show");
-    });
-}
-
 function showNotification(notification, customerName, message) {
     notification.firstElementChild.innerHTML = `You've ${message} ${customerName} successfully&nbsp; <i class="fas fa-check-double"></i>
     <i class="fas fa-times"></i>`
@@ -790,32 +364,16 @@ function showNotification(notification, customerName, message) {
     }, 5000)
 }
 
-function setErrorForInput(input, error) {
-    let errorField = input.nextElementSibling;
-    let successIcon = input.parentNode.lastElementChild;
-    input.classList.add("error");
-    input.classList.remove("success");
-    successIcon.classList.remove("show");
-    errorField.innerHTML = `<i class="fas fa-exclamation"></i> ${error}`;
-}
-
-function setSuccessForInput(input) {
-    let errorField = input.nextElementSibling;
-    let successIcon = errorField.nextElementSibling;
-    input.classList.add("success");
-    errorField.innerHTML = "";
-    successIcon.classList.add("show");
-}
-
 function render(customersToRender) {
     tableElement.innerHTML = "";
     rowsPerPage = selectElement.value;
+    showAndHidePrintDeleteElement(customers);
     let searchedCustomers = searchCustomersByName(customersToRender);
     let sortedCombinedCustomers = sortCombined(searchedCustomers, sortBy);
     // let sortedCustomersByStatus = sortCustomersByStatus(sortedCombinedCustomers, sortStatusOrder);
     // let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
     customersReadyToRender = sortedCombinedCustomers;
-
+    changeCheckAllInputStatus(customersReadyToRender);
     let currentCustomers = customersReadyToRender.slice((currentPage - 1) * rowsPerPage, rowsPerPage * (currentPage));
     currentCustomers.forEach(customer => {
         const row = createElement(customer);
@@ -841,16 +399,16 @@ function createElement(customer) {
         check = "checked";
     }
 
-    let customerLock = protected ? "" : "display";
-    let customerUnlock = protected ? "display" : "";
+    let customerLock = protected ? "display" : "";
+    let customerUnlock = protected ? "" : "display";
 
     row.innerHTML = `
     <td class="relative">
         <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${id})" class="check">
         <i class="fas fa-plus" onclick="getSpesificIndex(customers,${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
-        <i class="fas fa-lock ${customerLock}" onclick="lockCustomer(event,customers,${id})"></i>
-        <i class="fas fa-unlock ${customerUnlock}" onclick="unlockCustomer(event,customers,${id})"></i>
+        <i class="fas fa-lock ${customerLock}" onclick="unlockCustomer(customers,${id})"></i>
+        <i class="fas fa-unlock ${customerUnlock}" onclick="lockCustomer(customers,${id})"></i>
     </td>
     <td>
         <h5 class="customer-name">${firstName} ${lastName}</h5>
@@ -890,61 +448,53 @@ function createElement(customer) {
     return row;
 }
 
-function lockCustomer(event, originalCustomers, customerId) {
-    event.target.classList.toggle("display");
-    event.target.nextElementSibling.classList.toggle("display");
-    let customerIndex = originalCustomers.findIndex(customer => customer.id = customerId)
-    originalCustomers[customerIndex]["protected"] = false;
-}
-
-function unlockCustomer(event, originalCustomers, customerId) {
-    event.target.classList.toggle("display");
-    event.target.previousElementSibling.classList.toggle("display");
+function lockCustomer(originalCustomers, customerId) {
     let customerIndex = originalCustomers.findIndex(customer => customer.id == customerId)
     originalCustomers[customerIndex]["protected"] = true;
+    render(originalCustomers);
+    setCustomersInLocalStorage(customers);
 }
 
-function duplicateCustomer(originalCustomesList, customerId) {
-    formHeaderElement.innerText = "duplicate Customer";
-    form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    submitBtn.classList.add("hide-element");
-    btnGroupElement.classList.add("btn-group");
-    btnGroupElement.firstElementChild.textContent = "duplicate";
-    fillInputsField(originalCustomesList, customerId)
-    ToggledisabledInputs(true);
-    checkInputsValidation(originalCustomesList);
-    upDateProgressValue(countValidInputs(inputsElements));
-
-}
-
-function fillInputsField(originalCustomesList, customerId) {
-    customerToUpdate = originalCustomesList.find(customer => customer.id == customerId);
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerToUpdate;
-
-    firstNameElement.value = firstName;
-    lastNameElement.value = lastName;
-    numberElement.value = id;
-    balanceElement.value = balance;
-    rateElement.value = rate;
-    depositElement.value = deposit;
-    currencyElement.value = currency;
-    customerStatusElement.value = status;
-    descriptionElement.value = description;
+function unlockCustomer(originalCustomers, customerId) {
+    let customerIndex = originalCustomers.findIndex(customer => customer.id == customerId);
+    originalCustomers[customerIndex]["protected"] = false;
+    render(originalCustomers);
+    setCustomersInLocalStorage(customers);
 }
 
 function getSpesificIndex(originalCustomers, customerId) {
-    restInputsValue(inputsElements);
-    restInputsStyle(inputsElements);
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    submitBtn.classList.remove("hide-element");
-    btnGroupElement.classList.remove("btn-group");
-    formHeaderElement.innerText = "Add Customer";
-    scrollFormInToView();
-    upDateProgressValue(countValidInputs(inputsElements));
-    specificIndex = originalCustomers.findIndex(customer => customer.id == customerId);
-    return specificIndex++;
+    let index = originalCustomers.findIndex(customer => customer.id == customerId)
+    localStorage.setItem("spIndex", index);
+    window.location = "form.html";
+    // restInputsValue(inputsElements);
+    // restInputsStyle(inputsElements);
+    // submitBtn.classList.remove("hide-element");
+    // btnGroupElement.classList.remove("btn-group");
+    // formHeaderElement.innerText = "Add Customer";
+    // submitBtn.classList.remove("hide-element");
+    // btnGroupElement.classList.remove("btn-group");
+    // formHeaderElement.innerText = "Add Customer";
+    // upDateProgressValue(countValidInputs(inputsElements));
+    // specificIndex = originalCustomers.findIndex(customer => customer.id == customerId);
+    // return specificIndex++;
+}
+
+function duplicateCustomer(originalCustomesList, customerId) {
+    window.location = "form.html";
+    let index = originalCustomesList.findIndex(customer => customer.id == customerId);
+    localStorage.setItem("index", index);
+    localStorage.setItem("duplicate", true);
+    // window.location = "form.html"
+    // formHeaderElement.innerText = "duplicate Customer";
+    // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+    // submitBtn.classList.add("hide-element");
+    // btnGroupElement.classList.add("btn-group");
+    // btnGroupElement.firstElementChild.textContent = "duplicate";
+    // fillInputsField(originalCustomesList, customerId)
+    // ToggledisabledInputs(true);
+    // checkInputsValidation(originalCustomesList);
+    // upDateProgressValue(countValidInputs(inputsElements));
+
 }
 
 function showOptions(event) {
@@ -960,20 +510,16 @@ function updateCustomer(originalCustomesList, customerId) {
     if (isProtected) {
         return;
     } else {
-        formHeaderElement.innerText = "Update Customer";
-        form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-        submitBtn.classList.add("hide-element");
-        btnGroupElement.classList.add("btn-group");
-        btnGroupElement.firstElementChild.textContent = "update";
-        fillInputsField(originalCustomesList, customerId);
-        checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
-        upDateProgressValue(countValidInputs(inputsElements));
+        window.location = "form.html"
+            // formHeaderElement.innerText = "Update Customer";
+            // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+            // submitBtn.classList.add("hide-element");
+            // btnGroupElement.classList.add("btn-group");
+            // btnGroupElement.firstElementChild.textContent = "update";
+            // fillInputsField(originalCustomesList, customerId);
+            // checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
+            // upDateProgressValue(countValidInputs(inputsElements));
     }
-
-}
-
-function customersFiltredForUpdate(originalCustomesList) {
-    return originalCustomesList.filter(customer => customer.id != customerToUpdate.id);
 }
 
 function isCustomerProtected(originalCustomesList, customerId) {
@@ -986,9 +532,7 @@ function changeCustomerSelectedProperty(customersList, customerId) {
     let customerRow = document.getElementById(customerId);
     let customerIndex = customersList.findIndex((customer) => customer.id == customerId);
     customersList[customerIndex]["selected"] = customerRow.classList.contains("selected") ? false : true;
-    changeStyleForSelectedCustomer(customerRow);
-    showAndHidePrintDeleteElement(customersList);
-    changeCheckAllInputStatus(customersList);
+    render(customers);
 
 }
 
@@ -998,17 +542,11 @@ function deleteSelectedCustomers(originalCustomers) {
         currentPage = currentPage * rowsPerPage > customers.length && currentPage !== 1 ? Math.round(customers.length / rowsPerPage) : currentPage;
         setCustomersInLocalStorage(customers);
         render(customers);
-        showAndHidePrintDeleteElement(customers);
-        changeCheckAllInputStatus(customers);
     }
 }
 
 function showAndHidePrintDeleteElement(originalCustomers) {
     countSelectedCustomers(originalCustomers) > 1 ? printDeletElement.classList.remove("hidden") : printDeletElement.classList.add("hidden");
-}
-
-function changeStyleForSelectedCustomer(row) {
-    row.classList.toggle("selected");
 }
 
 function countSelectedCustomers(originalCustomers) {
@@ -1024,7 +562,6 @@ function checkBalance(amount) {
 searchElement.addEventListener("keyup", () => {
     currentPage = 1;
     render(customers);
-    changeCheckAllInputStatus(customersReadyToRender)
 })
 
 nameElement.addEventListener("click", () => {
@@ -1095,9 +632,7 @@ function deleteCustomer(originalCustomers, customerId) {
         customers = originalCustomers.filter(customer => customer.id != customerId);
         currentPage = currentPage * rowsPerPage > customers.length && customers.length % rowsPerPage === 0 ? customers.length / rowsPerPage : currentPage;
         render(customers);
-        showAndHidePrintDeleteElement(customers);
         setCustomersInLocalStorage(customers);
-        changeCheckAllInputStatus(customersReadyToRender);
     }
 }
 
@@ -1119,3 +654,20 @@ previousPageElement.addEventListener("click", () => {
     currentPage > 1 ? currentPage -= 1 : currentPage = currentPage;
     render(customers)
 })
+
+window.onload = function() {
+    if (localStorage.getItem("id")) {
+        let id = localStorage.getItem("id")
+        let tableRowElement = document.getElementById(id);
+        showUpHiglightedcustomer(tableRowElement);
+        showNotification(notificationElement, "", "add");
+        localStorage.removeItem("id")
+    } else if (localStorage.getItem("duplicate")) {
+        let index = localStorage.getItem("index");
+        index++
+        let tableRowElement = document.getElementById(customers[index].id);
+        showUpHiglightedcustomer(tableRowElement);
+        showNotification(notificationElement, "", "duplicated");
+        localStorage.removeItem("duplicate")
+    }
+};
