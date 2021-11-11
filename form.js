@@ -14,7 +14,6 @@ const validationForm = document.getElementById("validation-form");
 const submitBtn = document.getElementById("submit");
 const updateBtn = document.getElementById("update");
 const formHeaderElement = document.getElementById("form-header");
-const btnGroupElement = document.getElementById("btn-group");
 const cancelBtn = document.getElementById("cancel");
 const percentElement = document.getElementById("percent");
 const progressBarElement = document.getElementById("prog-bar");
@@ -25,7 +24,7 @@ function countValidInputs(inputs) {
     return inputs.filter(input => input.classList.contains("success")).length;
 }
 
-let customers = JSON.parse(localStorage.getItem("customers")) ? JSON.parse(localStorage.getItem("customers")).map(customer => Object.assign(customer, { "selected": false, "protected": false })) : [];
+let customers = JSON.parse(localStorage.getItem("customers")) ? JSON.parse(localStorage.getItem("customers")) : [];
 
 function showProgress(progressValue) {
     progressBarElement.classList.remove("hide-element");
@@ -52,15 +51,12 @@ updateBtn.addEventListener("click", () => {
 
         if (localStorage.getItem("duplicate")) {
             customerToUpdateIndex++;
-            customers.splice(customerToUpdateIndex, 0, customerData);
-            setCustomersInLocalStorage(customers);
-            window.location = "table.html";
+            spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 0);
 
-        } else if (localStorage.getItem("update")) {
-            customers.splice(customerToUpdateIndex, 1, customerData);
-            setCustomersInLocalStorage(customers);
-            window.location = "table.html";
+        } else {
+            spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 1);
         }
+        window.location = "table.html";
     }
 
 })
@@ -78,6 +74,7 @@ cancelBtn.addEventListener("click", () => {
     localStorage.removeItem("index");
     localStorage.removeItem("duplicate");
     localStorage.removeItem("update");
+    localStorage.removeItem("add");;
     window.location = "table.html";
 })
 
@@ -116,34 +113,28 @@ form.addEventListener("submit", (e) => {
     e.preventDefault();
     checkInputsValidation(customers);
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
+
     if (isAllInputsValid) {
-        if (localStorage.getItem("spIndex")) {
-            let customerData = getCustomerDataFromUser();
-            let index = localStorage.getItem("spIndex");
-            console.log(localStorage.getItem("spIndex"));
-            updateTable(inputsElements, customerData, index, "Add");
-            window.location = "table.html"
+        let customerData = getCustomerDataFromUser();
+        let specificIndex = localStorage.getItem("spIndex");
+
+        if (specificIndex) {
+            spliceDataInOriginalList(customers, specificIndex, customerData, 0);
         } else {
-            let customerData = getCustomerDataFromUser();
-            updateTable(inputsElements, customerData, 0, "Add");
-            window.location = "table.html"
+            spliceDataInOriginalList(customers, 0, customerData, 0);
         }
+        window.location = "table.html";
     }
 })
 
-function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser, deleteCount = 0) {
-    originalCustomesList.splice(customerIndex, deleteCount, customerDataFromUser)
-}
-
-function updateTable(inputsList, customerDataFromUser, index, message, deleteCount) {
-    spliceDataInOriginalList(customers, index, customerDataFromUser, deleteCount)
+function spliceDataInOriginalList(originalCustomesList, customerIndex, customerDataFromUser, deleteCount) {
+    originalCustomesList.splice(customerIndex, deleteCount, customerDataFromUser);
     setCustomersInLocalStorage(customers);
-    localStorage.setItem("id", customerDataFromUser.id)
 }
 
 firstNameElement.addEventListener("input", () => {
-    if (btnGroupElement.classList.contains("btn-group")) {
-        firstNameValidity(firstNameElement, customersFiltredForUpdate(customers, customerToUpdate));
+    if (!updateBtn.classList.contains("hide-element")) {
+        firstNameValidity(firstNameElement, customersFiltredForUpdateOperation(customers, customerToUpdate));
     } else {
         firstNameValidity(firstNameElement, customers);
     }
@@ -156,8 +147,8 @@ lastNameElement.addEventListener("input", () => {
 })
 
 numberElement.addEventListener("input", () => {
-    if (btnGroupElement.classList.contains("btn-group")) {
-        numberValidity(numberElement, customersFiltredForUpdate(customers, customerToUpdate));
+    if (!updateBtn.classList.contains("hide-element")) {
+        numberValidity(numberElement, customersFiltredForUpdateOperation(customers, customerToUpdate));
     } else {
         numberValidity(numberElement, customers);
     }
@@ -230,16 +221,14 @@ currencyElement.addEventListener("blur", (e) => {
     if (!e.target.value) currencyValidity(currencyElement);
 })
 
-function checkInputsValidation(originalCustomers) {
-    firstNameValidity(firstNameElement, originalCustomers);
-    lastNameValidity(lastNameElement);
-    descriptionValidity(descriptionElement);
-    statusValidity(customerStatusElement);
-    currencyValidity(currencyElement);
-    numberValidity(numberElement, originalCustomers);
-    depositValidity(depositElement);
-    ratetValidity(rateElement);
-    balanceValidity(balanceElement);
+function lastNameValidity(input) {
+    if (hasValue(input)) {
+        return false;
+    } else if (checkOnlyLetters(input, /^[a-zA-Z]*$/)) {
+        return false;
+    } else {
+        return true
+    }
 }
 
 function firstNameValidity(input, originalCustomers) {
@@ -319,16 +308,6 @@ function descriptionValidity(input) {
     return true
 }
 
-function lastNameValidity(input) {
-    if (hasValue(input)) {
-        return false;
-    } else if (checkOnlyLetters(input, "[a-zA-Z]+$")) {
-        return false;
-    } else {
-        return true
-    }
-}
-
 function hasValue(input) {
     if (!input.value.trim()) {
         setErrorForInput(input, `${input.name} can't be blanck`);
@@ -389,23 +368,20 @@ function checkOnlyLetters(input, regx) {
     return false;
 }
 
+function checkInputsValidation(originalCustomers) {
+    firstNameValidity(firstNameElement, originalCustomers);
+    lastNameValidity(lastNameElement);
+    descriptionValidity(descriptionElement);
+    statusValidity(customerStatusElement);
+    currencyValidity(currencyElement);
+    numberValidity(numberElement, originalCustomers);
+    depositValidity(depositElement);
+    ratetValidity(rateElement);
+    balanceValidity(balanceElement);
+}
+
 function isInputsValiditySuccess(inputsList) {
     return inputsList.every(input => input.classList.contains("success"))
-}
-
-function restInputsValue(inputs) {
-    inputs.forEach(input => input.value = "");
-    customerStatusElement.selectedIndex = 0;
-    currencyElement.selectedIndex = 0;
-}
-
-function restInputsStyle(inputs) {
-    inputs.forEach((input) => {
-        input.classList.remove("success", "error");
-        input.nextElementSibling.innerHTML = "";
-        //set success Icon visibility hidden
-        input.nextElementSibling.nextElementSibling.classList.remove("show");
-    });
 }
 
 function setErrorForInput(input, error) {
@@ -427,7 +403,6 @@ function setSuccessForInput(input) {
 
 function fillInputsField(customerData) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency } = customerData;
-
     firstNameElement.value = firstName;
     lastNameElement.value = lastName;
     numberElement.value = id;
@@ -439,7 +414,7 @@ function fillInputsField(customerData) {
     descriptionElement.value = description;
 }
 
-function customersFiltredForUpdate(originalCustomesList, customerTo) {
+function customersFiltredForUpdateOperation(originalCustomesList, customerTo) {
     return originalCustomesList.filter(customer => customer.id != customerTo.id);
 }
 
@@ -447,9 +422,8 @@ window.onload = function() {
     if (localStorage.getItem("duplicate")) {
         formHeaderElement.innerText = "duplicate Customer";
         submitBtn.classList.add("hide-element");
-        btnGroupElement.classList.add("btn-group");
-        btnGroupElement.classList.remove("hide-element");
-        btnGroupElement.firstElementChild.textContent = "duplicate";
+        updateBtn.classList.remove("hide-element");
+        updateBtn.textContent = "duplicate";
         let index = localStorage.getItem("index");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
@@ -459,12 +433,11 @@ window.onload = function() {
     } else if (localStorage.getItem("update")) {
         formHeaderElement.innerText = "update Customer";
         submitBtn.classList.add("hide-element");
-        btnGroupElement.classList.add("btn-group");
-        btnGroupElement.classList.remove("hide-element");
+        updateBtn.classList.remove("hide-element")
         let index = localStorage.getItem("indexx");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
-        checkInputsValidation(customersFiltredForUpdate(customers, customerToUpdate));
+        checkInputsValidation(customersFiltredForUpdateOperation(customers, customerToUpdate));
         upDateProgressValue(countValidInputs(inputsElements));
     }
 };

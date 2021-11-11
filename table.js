@@ -241,7 +241,6 @@ let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
 let sortBy;
-let specificIndex = 0;
 
 function setCustomersInLocalStorageOnce(originalCustomesList) {
     if (JSON.parse(localStorage.getItem("customers")) === null) {
@@ -314,6 +313,8 @@ sortModuleElement.addEventListener("click", (e) => {
 })
 
 addCustomer.addEventListener("click", () => {
+    localStorage.setItem("add", true);
+    localStorage.setItem("spIndex", 0);
     window.location = "form.html";
 })
 
@@ -404,8 +405,8 @@ function createElement(customer) {
 
     row.innerHTML = `
     <td class="relative">
-        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(customersReadyToRender,${id})" class="check">
-        <i class="fas fa-plus" onclick="getSpesificIndex(customers,${id})"></i>
+        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(event ,customersReadyToRender,${id})" class="check">
+        <i class="fas fa-plus" onclick="getSpesificIndex(customers, ${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
         <i class="fas fa-lock ${customerLock}" onclick="unlockCustomer(customers,${id})"></i>
         <i class="fas fa-unlock ${customerUnlock}" onclick="lockCustomer(customers,${id})"></i>
@@ -466,18 +467,8 @@ function getSpesificIndex(originalCustomers, customerId) {
     let index = originalCustomers.findIndex(customer => customer.id == customerId)
     index++;
     localStorage.setItem("spIndex", index);
+    localStorage.setItem("add", true);
     window.location = "form.html";
-    // restInputsValue(inputsElements);
-    // restInputsStyle(inputsElements);
-    // submitBtn.classList.remove("hide-element");
-    // btnGroupElement.classList.remove("btn-group");
-    // formHeaderElement.innerText = "Add Customer";
-    // submitBtn.classList.remove("hide-element");
-    // btnGroupElement.classList.remove("btn-group");
-    // formHeaderElement.innerText = "Add Customer";
-    // upDateProgressValue(countValidInputs(inputsElements));
-    // specificIndex = originalCustomers.findIndex(customer => customer.id == customerId);
-    // return specificIndex++;
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
@@ -485,17 +476,6 @@ function duplicateCustomer(originalCustomesList, customerId) {
     let index = originalCustomesList.findIndex(customer => customer.id == customerId);
     localStorage.setItem("index", index);
     localStorage.setItem("duplicate", true);
-    // window.location = "form.html"
-    // formHeaderElement.innerText = "duplicate Customer";
-    // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-    // submitBtn.classList.add("hide-element");
-    // btnGroupElement.classList.add("btn-group");
-    // btnGroupElement.firstElementChild.textContent = "duplicate";
-    // fillInputsField(originalCustomesList, customerId)
-    // ToggledisabledInputs(true);
-    // checkInputsValidation(originalCustomesList);
-    // upDateProgressValue(countValidInputs(inputsElements));
-
 }
 
 function showOptions(event) {
@@ -515,14 +495,6 @@ function updateCustomer(originalCustomesList, customerId) {
         let index = originalCustomesList.findIndex(customer => customer.id == customerId);
         localStorage.setItem("indexx", index);
         localStorage.setItem("update", true);
-        // formHeaderElement.innerText = "Update Customer";
-        // form.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
-        // submitBtn.classList.add("hide-element");
-        // btnGroupElement.classList.add("btn-group");
-        // btnGroupElement.firstElementChild.textContent = "update";
-        // fillInputsField(originalCustomesList, customerId);
-        // checkInputsValidation(customersFiltredForUpdate(originalCustomesList));
-        // upDateProgressValue(countValidInputs(inputsElements));
     }
 }
 
@@ -532,10 +504,9 @@ function isCustomerProtected(originalCustomesList, customerId) {
     return false;
 }
 
-function changeCustomerSelectedProperty(customersList, customerId) {
-    let customerRow = document.getElementById(customerId);
+function changeCustomerSelectedProperty(event, customersList, customerId) {
     let customerIndex = customersList.findIndex((customer) => customer.id == customerId);
-    customersList[customerIndex]["selected"] = customerRow.classList.contains("selected") ? false : true;
+    customersList[customerIndex]["selected"] = event.target.checked;
     render(customers);
 
 }
@@ -660,27 +631,29 @@ previousPageElement.addEventListener("click", () => {
 })
 
 window.onload = function() {
-    if (localStorage.getItem("id")) {
-        let id = localStorage.getItem("id");
-        let tableRowElement = document.getElementById(id);
+    if (localStorage.getItem("add")) {
+        let index = localStorage.getItem("spIndex");
+        let customerId = customers[index].id;
+        let tableRowElement = document.getElementById(customerId);
         showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, "", "add");
-        localStorage.removeItem("id");
+        showNotification(notificationElement, customers[index].firstName, "add");
+        localStorage.clear();
+        setCustomersInLocalStorage(customers);
     } else if (localStorage.getItem("duplicate")) {
         let index = localStorage.getItem("index");
         index++
         let tableRowElement = document.getElementById(customers[index].id);
         console.log(localStorage.getItem("index"))
         showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, "", "duplicated");
-        localStorage.removeItem("duplicate");
-        localStorage.removeItem("index");
+        showNotification(notificationElement, customers[index].firstName, "duplicated");
+        localStorage.clear();
+        setCustomersInLocalStorage(customers);
     } else if (localStorage.getItem("update")) {
         let index = localStorage.getItem("indexx");
         let tableRowElement = document.getElementById(customers[index].id);
         showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, "", "update");
-        localStorage.removeItem("update");
-        localStorage.removeItem("indexx");
+        showNotification(notificationElement, customers[index].firstName, "update");
+        localStorage.clear();
+        setCustomersInLocalStorage(customers);
     }
 };

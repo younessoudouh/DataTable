@@ -65,25 +65,11 @@ form {
 .btn {
     padding: 4px 5px;
     text-transform: uppercase;
-    font-size: 10px;
-    border: 1px solid var(--secondary-color);
-    border-radius: 11px;
-    color: var(--secondary-color);
     border: 0;
     color: #ffffff;
     background: #0A65FF;
-}
-
-h2 {
-    text-align: center;
-    color: #7D90B2;
-    margin-top: 10px;
-}
-
-.btn-submit-update {
-    display: block;
     width: 50%;
-    margin: 10px auto;
+    margin: 10px 0;
     font-size: 18px;
     border-radius: 15px;
     cursor: pointer;
@@ -91,7 +77,14 @@ h2 {
     transition: all .5s;
 }
 
-.btn-submit-update:hover,
+h2 {
+    text-align: center;
+    color: #7D90B2;
+    margin-top: 10px;
+    margin-top: 40px;
+}
+
+.btn:hover,
 .add:hover {
     background: rgb(2, 71, 190);
 }
@@ -149,6 +142,7 @@ form>div {
     position: fixed;
     z-index: 600;
     left: 50%;
+    top: 0;
     transform: translate(-50%);
 }
 
@@ -171,10 +165,6 @@ form>div {
 .selected {
     border-left: 3px solid rgb(2, 71, 190);
     background-color: #ebf2ff !important;
-}
-
-.show-btn {
-    display: block;
 }
 
 .btn-group {

@@ -235,10 +235,6 @@ select {
     font-size: 16px;
 }
 
-tbody tr {
-    cursor: pointer;
-}
-
 tbody tr:hover {
     background: #DAE1EC;
     box-shadow: inset 2px 2px 3px #7D90B2, inset -2px -2px 3px #7D90B2;
