@@ -56,7 +56,7 @@ updateBtn.addEventListener("click", () => {
         } else {
             spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 1);
         }
-        window.location = "table.html";
+        window.location.replace("table.html");
     }
 
 })
@@ -70,12 +70,9 @@ function ToggledisabledInputs() {
 }
 
 cancelBtn.addEventListener("click", () => {
-    localStorage.removeItem("id");
-    localStorage.removeItem("index");
-    localStorage.removeItem("duplicate");
-    localStorage.removeItem("update");
-    localStorage.removeItem("add");;
-    window.location = "table.html";
+    localStorage.clear();
+    setCustomersInLocalStorage(customers);
+    window.location.replace("table.html");
 })
 
 function getCustomerDataFromUser() {
@@ -123,7 +120,7 @@ form.addEventListener("submit", (e) => {
         } else {
             spliceDataInOriginalList(customers, 0, customerData, 0);
         }
-        window.location = "table.html";
+        window.location.replace("table.html");
     }
 })
 

@@ -241,6 +241,7 @@ let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
 let sortBy;
+console.log("in")
 
 function setCustomersInLocalStorageOnce(originalCustomesList) {
     if (JSON.parse(localStorage.getItem("customers")) === null) {
@@ -315,7 +316,7 @@ sortModuleElement.addEventListener("click", (e) => {
 addCustomer.addEventListener("click", () => {
     localStorage.setItem("add", true);
     localStorage.setItem("spIndex", 0);
-    window.location = "form.html";
+    window.location.replace("form.html");
 })
 
 function showUpHiglightedcustomer(customerRow) {
@@ -468,14 +469,14 @@ function getSpesificIndex(originalCustomers, customerId) {
     index++;
     localStorage.setItem("spIndex", index);
     localStorage.setItem("add", true);
-    window.location = "form.html";
+    window.location.replace("form.html");
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
-    window.location = "form.html";
     let index = originalCustomesList.findIndex(customer => customer.id == customerId);
     localStorage.setItem("index", index);
     localStorage.setItem("duplicate", true);
+    window.location.replace("form.html");
 }
 
 function showOptions(event) {
@@ -491,10 +492,10 @@ function updateCustomer(originalCustomesList, customerId) {
     if (isProtected) {
         return;
     } else {
-        window.location = "form.html";
         let index = originalCustomesList.findIndex(customer => customer.id == customerId);
         localStorage.setItem("indexx", index);
         localStorage.setItem("update", true);
+        window.location.replace("form.html");
     }
 }
 
@@ -643,7 +644,6 @@ window.onload = function() {
         let index = localStorage.getItem("index");
         index++
         let tableRowElement = document.getElementById(customers[index].id);
-        console.log(localStorage.getItem("index"))
         showUpHiglightedcustomer(tableRowElement);
         showNotification(notificationElement, customers[index].firstName, "duplicated");
         localStorage.clear();

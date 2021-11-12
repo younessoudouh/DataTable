@@ -18,9 +18,9 @@
             <div class="progress" id="progress"></div>
             <div class="percent" id="percent">Progress: 0%</div>
         </div>
-        <div class="form-container">
-            <form id="form">
-                <h2 id="form-header">Add Customer</h2>
+        <form id="form">
+            <h2 id="form-header">Add Customer</h2>
+            <div class="first-section">
                 <div>
                     <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
                     <small></small>
@@ -41,6 +41,8 @@
                     <small></small>
                     <i class="fas fa-check-circle"></i>
                 </div>
+            </div>
+            <div class="second-section">
                 <div>
                     <input type="text" class="add-customer-input" id="rate" name="rate" placeholder="Rate">
                     <small></small>
@@ -70,19 +72,23 @@
                     <small></small>
                     <i class="fas fa-check-circle"></i>
                 </div>
+            </div>
+            <div class="third-section">
                 <div>
                     <textarea class="add-customer-input" name="description" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
                     <small></small>
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <div class="btn-group">
-                    <button class="btn" id="submit" type="submit">Submit</button>
-                    <button class="btn hide-element" id="update" type="button">update</button>
-                    <button class="btn" id="cancel" type="button">Cancel</button>
-                </div>
-            </form>
-        </div>
-        <script src="form.js" defer></script>
+            </div>
+            <div class="btn-group">
+                <button class="btn" id="submit" type="submit">Submit</button>
+                <button class="btn hide-element" id="update" type="button">update</button>
+                <button class="btn" id="cancel" type="button">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+    <script src="form.js" defer></script>
 </body>
 
 </html>
