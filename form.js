@@ -431,7 +431,7 @@ window.onload = function() {
         formHeaderElement.innerText = "update Customer";
         submitBtn.classList.add("hide-element");
         updateBtn.classList.remove("hide-element")
-        let index = localStorage.getItem("indexx");
+        let index = localStorage.getItem("index");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
         checkInputsValidation(customersFiltredForUpdateOperation(customers, customerToUpdate));

@@ -1,5 +1,5 @@
 let clients = [{
-        firstName: "Estefânio",
+        firstName: "Estefanio",
         lastName: "de Souza",
         id: 1290763872,
         description: "Reach the full potential of your Customer Experience blueprint with Kinetic CX as your implementation",
@@ -43,7 +43,7 @@ let clients = [{
         currency: "INR"
     },
     {
-        firstName: "Anaëlle",
+        firstName: "Anaelle",
         lastName: "Olivier",
         id: 6789056789,
         description: "Organizations are continuously seeking to deliver new value for their customers to build trust and loyalty.",
@@ -146,7 +146,7 @@ let clients = [{
         currency: "INR"
     }, {
         firstName: "Vildan",
-        lastName: "Tüzün",
+        lastName: "Tuzun",
         id: 1123888873,
         description: " Doing so will lower the amount of points awarded to your keyword, resulting in your article's search ranking diminishing. ",
         rate: "30.00",
@@ -165,7 +165,7 @@ let clients = [{
         status: "inactive",
         currency: "INR"
     }, {
-        firstName: "Florência",
+        firstName: "Florencia",
         lastName: "Souza",
         id: 1123000000,
         description: "refrain from adding related documents in new articles that will be pending review. ",
@@ -236,12 +236,10 @@ const deletSelectedElement = document.getElementById("delet-selected-customers")
 const printSelectedElement = document.getElementById("print")
 const checkAllInputElement = document.getElementById("check-all");
 const addCustomer = document.getElementById("add");
-let sortStatusOrder, sortNameOrder;
 let currentPage = 1;
 let rowsPerPage;
 let customersReadyToRender;
 let sortBy;
-console.log("in")
 
 function setCustomersInLocalStorageOnce(originalCustomesList) {
     if (JSON.parse(localStorage.getItem("customers")) === null) {
@@ -343,18 +341,6 @@ function printCustomer(originalCustomers, customerId) {
 
 }
 
-function updateTable(inputsList, customerDataFromUser, index, message, deleteCount) {
-    spliceDataInOriginalList(customers, index, customerDataFromUser, deleteCount)
-    setCustomersInLocalStorage(customers);
-    restInputsValue(inputsList);
-    restInputsStyle(inputsList);
-    render(customers);
-    let tableRowElement = document.getElementById(customerDataFromUser.id);
-    showUpHiglightedcustomer(tableRowElement);
-    showNotification(notificationElement, customerDataFromUser.firstName, message);
-    upDateProgressValue(countValidInputs(inputsList));
-}
-
 function showNotification(notification, customerName, message) {
     notification.firstElementChild.innerHTML = `You've ${message} ${customerName} successfully&nbsp; <i class="fas fa-check-double"></i>
     <i class="fas fa-times"></i>`
@@ -368,14 +354,14 @@ function showNotification(notification, customerName, message) {
 
 function render(customersToRender) {
     tableElement.innerHTML = "";
-    rowsPerPage = selectElement.value;
-    showAndHidePrintDeleteElement(customers);
+    rowsPerPage = parseInt(selectElement.value);
     let searchedCustomers = searchCustomersByName(customersToRender);
     let sortedCombinedCustomers = sortCombined(searchedCustomers, sortBy);
-    // let sortedCustomersByStatus = sortCustomersByStatus(sortedCombinedCustomers, sortStatusOrder);
-    // let sortedCustomersByName = sortCustomersByName(sortedCustomersByStatus, sortNameOrder);
     customersReadyToRender = sortedCombinedCustomers;
+    showAndHidePrintDeleteElement(customersReadyToRender);
     changeCheckAllInputStatus(customersReadyToRender);
+    let customersLength = customersToRender.length;
+    currentPage = updateCurrentPage(customersLength, currentPage, rowsPerPage);
     let currentCustomers = customersReadyToRender.slice((currentPage - 1) * rowsPerPage, rowsPerPage * (currentPage));
     currentCustomers.forEach(customer => {
         const row = createElement(customer);
@@ -385,7 +371,7 @@ function render(customersToRender) {
      <strong>${countActiveCustomers(customersReadyToRender)}</strong> / 
      <small>${customersReadyToRender.length}</small>`;
     let currentCustomersStart = customersReadyToRender.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
-    let currentCustomersEnd = customersReadyToRender.length === 0 ? 0 : (currentCustomers.length - rowsPerPage) + rowsPerPage * (currentPage);
+    let currentCustomersEnd = rowsPerPage * (currentPage) - (rowsPerPage - currentCustomers.length);
     displayedCustomerElement.innerHTML = `${currentCustomersStart}-${currentCustomersEnd} of ${customersReadyToRender.length}`;
 }
 
@@ -393,7 +379,6 @@ function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected, protected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", id);
-
     let check = "";
 
     if (selected) {
@@ -407,7 +392,7 @@ function createElement(customer) {
     row.innerHTML = `
     <td class="relative">
         <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(event ,customersReadyToRender,${id})" class="check">
-        <i class="fas fa-plus" onclick="getSpesificIndex(customers, ${id})"></i>
+        <i class="fas fa-plus" onclick="addCustomerInSpesificIndex(customers, ${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
         <i class="fas fa-lock ${customerLock}" onclick="unlockCustomer(customers,${id})"></i>
         <i class="fas fa-unlock ${customerUnlock}" onclick="lockCustomer(customers,${id})"></i>
@@ -464,7 +449,7 @@ function unlockCustomer(originalCustomers, customerId) {
     setCustomersInLocalStorage(customers);
 }
 
-function getSpesificIndex(originalCustomers, customerId) {
+function addCustomerInSpesificIndex(originalCustomers, customerId) {
     let index = originalCustomers.findIndex(customer => customer.id == customerId)
     index++;
     localStorage.setItem("spIndex", index);
@@ -493,7 +478,7 @@ function updateCustomer(originalCustomesList, customerId) {
         return;
     } else {
         let index = originalCustomesList.findIndex(customer => customer.id == customerId);
-        localStorage.setItem("indexx", index);
+        localStorage.setItem("index", index);
         localStorage.setItem("update", true);
         window.location.replace("form.html");
     }
@@ -515,7 +500,6 @@ function changeCustomerSelectedProperty(event, customersList, customerId) {
 function deleteSelectedCustomers(originalCustomers) {
     if (confirm("are you sure you want to delete all selected customers")) {
         customers = originalCustomers.filter((customer) => customer.selected === false || customer.protected === true);
-        currentPage = currentPage * rowsPerPage > customers.length && currentPage !== 1 ? Math.round(customers.length / rowsPerPage) : currentPage;
         setCustomersInLocalStorage(customers);
         render(customers);
     }
@@ -540,43 +524,6 @@ searchElement.addEventListener("keyup", () => {
     render(customers);
 })
 
-nameElement.addEventListener("click", () => {
-    if (sortStatusOrder != undefined) {
-        sortStatusOrder = undefined;
-        statusElement.classList.remove("sort-desc", "sort-asc");
-    }
-
-    if (sortNameOrder === "asc") {
-        sortNameOrder = "desc";
-        nameElement.classList.add("sort-desc");
-    } else if (sortNameOrder === undefined) {
-        sortNameOrder = "asc";
-        nameElement.classList.add("sort-asc");
-    } else {
-        sortNameOrder = undefined;
-        nameElement.classList.remove("sort-desc", "sort-asc");
-    }
-    render(customers);
-})
-
-statusElement.addEventListener("click", () => {
-    if (sortNameOrder != undefined) {
-        sortNameOrder = undefined;
-        nameElement.classList.remove("sort-desc", "sort-asc");
-    }
-    if (sortStatusOrder === "asc") {
-        sortStatusOrder = "desc";
-        statusElement.classList.add("sort-desc")
-    } else if (sortStatusOrder === undefined) {
-        sortStatusOrder = "asc";
-        statusElement.classList.add("sort-asc");
-    } else {
-        sortStatusOrder = undefined;
-        statusElement.classList.remove("sort-desc", "sort-asc");
-    }
-    render(customers);
-})
-
 function searchCustomersByName(customersToSearchIn) {
     let searchValue = searchElement.value.toLowerCase();
     let searchedCustomers = customersToSearchIn.filter(customer => {
@@ -586,16 +533,36 @@ function searchCustomersByName(customersToSearchIn) {
 }
 
 function sortCustomersByStatus(originalCustomers, sortOrder) {
-    if (sortOrder === "active") return (originalCustomers.filter((customer) => customer.status === "active"))
-        .concat(originalCustomers.filter((customer) => customer.status === "inactive"));
-    if (sortOrder === "inactive") return (originalCustomers.filter((customer) => customer.status === "inactive"))
-        .concat(originalCustomers.filter((customer) => customer.status === "active"));
+    if (sortOrder === "active") {
+        statusElement.classList.add("sort-asc");
+        statusElement.classList.remove("sort-desc");
+        return (originalCustomers.filter((customer) => customer.status === "active"))
+            .concat(originalCustomers.filter((customer) => customer.status === "inactive"))
+    }
+
+    if (sortOrder === "inactive") {
+        statusElement.classList.add("sort-desc");
+        statusElement.classList.remove("sort-asc");
+        return (originalCustomers.filter((customer) => customer.status === "inactive"))
+            .concat(originalCustomers.filter((customer) => customer.status === "active"))
+    }
+    statusElement.classList.remove("sort-desc", "sort-asc");
     return originalCustomers;
 }
 
 function sortCustomersByName(originalCustomers, sortOrder) {
-    if (sortOrder === "asc") return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
-    if (sortOrder === "desc") return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
+    if (sortOrder === "asc") {
+        nameElement.classList.add("sort-asc");
+        nameElement.classList.remove("sort-desc");
+        return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? 1 : -1);
+    }
+
+    if (sortOrder === "desc") {
+        nameElement.classList.remove("sort-asc");
+        nameElement.classList.add("sort-desc");
+        return originalCustomers.sort((customer1, customer2) => (customer1.firstName > customer2.firstName) ? -1 : 1);
+    }
+    nameElement.classList.remove("sort-desc", "sort-asc");
     return originalCustomers;
 }
 
@@ -606,10 +573,15 @@ function deleteCustomer(originalCustomers, customerId) {
 
     if (confirm("are you sure")) {
         customers = originalCustomers.filter(customer => customer.id != customerId);
-        currentPage = currentPage * rowsPerPage > customers.length && customers.length % rowsPerPage === 0 ? customers.length / rowsPerPage : currentPage;
         render(customers);
         setCustomersInLocalStorage(customers);
     }
+}
+
+
+function updateCurrentPage(arr, currPg, rows) {
+    if ((arr + rows) > currPg * rows) return currPg;
+    return updateCurrentPage(arr, currPg - 1, rows)
 }
 
 function countActiveCustomers(customersToCountIn) {
@@ -649,7 +621,7 @@ window.onload = function() {
         localStorage.clear();
         setCustomersInLocalStorage(customers);
     } else if (localStorage.getItem("update")) {
-        let index = localStorage.getItem("indexx");
+        let index = localStorage.getItem("index");
         let tableRowElement = document.getElementById(customers[index].id);
         showUpHiglightedcustomer(tableRowElement);
         showNotification(notificationElement, customers[index].firstName, "update");

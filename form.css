@@ -163,7 +163,12 @@ select.success+small {
 
 form div {
     position: relative;
-    padding-bottom: 25px;
+    margin-bottom: 25px;
+}
+
+.btn-group,
+.third-section div {
+    margin-bottom: 25px;
 }
 
 .hidden {
