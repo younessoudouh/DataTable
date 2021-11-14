@@ -216,7 +216,6 @@ let clients = [{
         currency: "INR"
     }
 ];
-
 const tableElement = document.getElementById("table");
 const searchElement = document.getElementById("search");
 const statusElement = document.getElementById("status");
@@ -252,6 +251,7 @@ setCustomersInLocalStorageOnce(clients);
 let customers = JSON.parse(localStorage.getItem("customers")) ? JSON.parse(localStorage.getItem("customers")).map(customer => Object.assign(customer, { "selected": false })) : [];
 
 render(customers);
+updateTableAfterUserUseForm()
 
 radioInputsElements.forEach(input => {
     input.addEventListener("change", () => {
@@ -312,19 +312,21 @@ sortModuleElement.addEventListener("click", (e) => {
 })
 
 addCustomer.addEventListener("click", () => {
-    localStorage.setItem("add", true);
-    localStorage.setItem("spIndex", 0);
-    window.location.replace("form.html");
+    let newUrl = "form.html?add=true&&spIndex=0"
+    window.location.replace(newUrl);
 })
 
-function showUpHiglightedcustomer(customerRow) {
-    if (customerRow !== null) {
-        customerRow.scrollIntoView();
-        customerRow.classList.add("highlight");
+function RemoveHiglightForCustomer(customerId) {
+    let customerIndex = customers.findIndex(customer => customer.id == customerId);
+    let isHiglighted = customers[customerIndex]["higlighted"];
+    if (isHiglighted) {
+        customers[customerIndex]["higlighted"] = false;
+        setCustomersInLocalStorage(customers)
         setTimeout(() => {
-            customerRow.classList.remove("highlight");
-        }, 3000)
+            render(customers)
+        }, 3000);
     }
+    return isHiglighted;
 }
 
 deletSelectedElement.addEventListener("click", () => {
@@ -341,15 +343,17 @@ function printCustomer(originalCustomers, customerId) {
 
 }
 
-function showNotification(notification, customerName, message) {
-    notification.firstElementChild.innerHTML = `You've ${message} ${customerName} successfully&nbsp; <i class="fas fa-check-double"></i>
+function showNotification(notification, customerName, message, isHiglighted) {
+    if (isHiglighted) {
+        notification.firstElementChild.innerHTML = `You've ${message} ${customerName} successfully&nbsp; <i class="fas fa-check-double"></i>
     <i class="fas fa-times"></i>`
-    notification.classList.remove("hidden");
-    notification.classList.add("animation-drop");
-    setTimeout(() => {
-        notification.classList.add("hidden");
-        notification.classList.remove("animation-drop");
-    }, 5000)
+        notification.classList.remove("hidden");
+        notification.classList.add("animation-drop");
+        setTimeout(() => {
+            notification.classList.add("hidden");
+            notification.classList.remove("animation-drop");
+        }, 3000)
+    }
 }
 
 function render(customersToRender) {
@@ -376,7 +380,7 @@ function render(customersToRender) {
 }
 
 function createElement(customer) {
-    let { firstName, lastName, description, rate, balance, deposit, status, id, currency, selected, protected } = customer;
+    let { firstName, lastName, description, rate, balance, deposit, status, id, currency, higlighted, selected, protected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", id);
     let check = "";
@@ -384,6 +388,10 @@ function createElement(customer) {
     if (selected) {
         row.setAttribute("class", "selected");
         check = "checked";
+    }
+
+    if (higlighted) {
+        row.setAttribute("class", "highlight");
     }
 
     let customerLock = protected ? "display" : "";
@@ -452,24 +460,14 @@ function unlockCustomer(originalCustomers, customerId) {
 function addCustomerInSpesificIndex(originalCustomers, customerId) {
     let index = originalCustomers.findIndex(customer => customer.id == customerId)
     index++;
-    localStorage.setItem("spIndex", index);
-    localStorage.setItem("add", true);
-    window.location.replace("form.html");
+    let newUrl = `form.html?add=true&&spIndex=${index}`
+    window.location.replace(newUrl);
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
     let index = originalCustomesList.findIndex(customer => customer.id == customerId);
-    localStorage.setItem("index", index);
-    localStorage.setItem("duplicate", true);
-    window.location.replace("form.html");
-}
-
-function showOptions(event) {
-    event.stopPropagation()
-    event.target.classList.toggle("hide");
-    ellipsisIconElement = event.target;
-    circleIconElement = event.target.nextElementSibling;
-    event.target.nextElementSibling.classList.toggle("hidden");
+    let newUrl = `form.html?duplicate=true&&index=${index}`
+    window.location.replace(newUrl);
 }
 
 function updateCustomer(originalCustomesList, customerId) {
@@ -478,10 +476,17 @@ function updateCustomer(originalCustomesList, customerId) {
         return;
     } else {
         let index = originalCustomesList.findIndex(customer => customer.id == customerId);
-        localStorage.setItem("index", index);
-        localStorage.setItem("update", true);
-        window.location.replace("form.html");
+        let newUrl = `form.html?update=true&&index=${index}`
+        window.location.replace(newUrl);
     }
+}
+
+function showOptions(event) {
+    event.stopPropagation()
+    event.target.classList.toggle("hide");
+    ellipsisIconElement = event.target;
+    circleIconElement = event.target.nextElementSibling;
+    event.target.nextElementSibling.classList.toggle("hidden");
 }
 
 function isCustomerProtected(originalCustomesList, customerId) {
@@ -603,29 +608,24 @@ previousPageElement.addEventListener("click", () => {
     render(customers)
 })
 
-window.onload = function() {
-    if (localStorage.getItem("add")) {
-        let index = localStorage.getItem("spIndex");
-        let customerId = customers[index].id;
-        let tableRowElement = document.getElementById(customerId);
-        showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, customers[index].firstName, "add");
-        localStorage.clear();
-        setCustomersInLocalStorage(customers);
-    } else if (localStorage.getItem("duplicate")) {
-        let index = localStorage.getItem("index");
-        index++
-        let tableRowElement = document.getElementById(customers[index].id);
-        showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, customers[index].firstName, "duplicated");
-        localStorage.clear();
-        setCustomersInLocalStorage(customers);
-    } else if (localStorage.getItem("update")) {
-        let index = localStorage.getItem("index");
-        let tableRowElement = document.getElementById(customers[index].id);
-        showUpHiglightedcustomer(tableRowElement);
-        showNotification(notificationElement, customers[index].firstName, "update");
-        localStorage.clear();
-        setCustomersInLocalStorage(customers);
+function getParameters(parName) {
+    let parameters = new URLSearchParams(window.location.search);
+    return parameters.get(parName)
+}
+
+function updateTableAfterUserUseForm() {
+    if (getParameters("add")) {
+        let CustomerIndex = getParameters("spIndex");
+        let customerId = customers[CustomerIndex].id;
+        let isHiglighted = RemoveHiglightForCustomer(customerId);
+        let customerName = customers[CustomerIndex].firstName;
+        showNotification(notificationElement, customerName, "add", isHiglighted);
+    } else if (getParameters("duplicate") || getParameters("update")) {
+        let message = getParameters("duplicate") ? "duplicate" : "update";
+        let CustomerIndex = getParameters("index");
+        let customerId = customers[CustomerIndex].id;
+        let isHiglighted = RemoveHiglightForCustomer(customerId);
+        let customerName = customers[CustomerIndex].firstName;
+        showNotification(notificationElement, customerName, message, isHiglighted);
     }
-};
+}

@@ -26,6 +26,8 @@ function countValidInputs(inputs) {
 
 let customers = JSON.parse(localStorage.getItem("customers")) ? JSON.parse(localStorage.getItem("customers")) : [];
 
+handleForm()
+
 function showProgress(progressValue) {
     progressBarElement.classList.remove("hide-element");
     progressElement.style.width = `${progressValue}%`;
@@ -46,17 +48,19 @@ updateBtn.addEventListener("click", () => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
 
     if (isAllInputsValid) {
-        let customerData = getCustomerDataFromUser();
-        let customerToUpdateIndex = customers.indexOf(customerToUpdate);
-
-        if (localStorage.getItem("duplicate")) {
+        let customerData = getCustomerDataFromUser(true);
+        let customerToUpdateIndex = getParameters("index");
+        let newUrl;
+        if (getParameters("duplicate")) {
             customerToUpdateIndex++;
             spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 0);
+            newUrl = `table.html?duplicate=true&&index=${customerToUpdateIndex}`;
 
         } else {
             spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 1);
+            newUrl = `table.html?update=true&&index=${customerToUpdateIndex}`;
         }
-        window.location.replace("table.html");
+        window.location.replace(newUrl);
     }
 
 })
@@ -70,12 +74,10 @@ function ToggledisabledInputs() {
 }
 
 cancelBtn.addEventListener("click", () => {
-    localStorage.clear();
-    setCustomersInLocalStorage(customers);
     window.location.replace("table.html");
 })
 
-function getCustomerDataFromUser() {
+function getCustomerDataFromUser(higlighted) {
     let firstName = firstNameElement.value.trim() !== "" ?
         valuecapitalize(firstNameElement.value) :
         firstNameElement.value;
@@ -98,7 +100,8 @@ function getCustomerDataFromUser() {
         description,
         balance,
         deposit,
-        status
+        status,
+        higlighted
     };
 }
 
@@ -112,15 +115,16 @@ form.addEventListener("submit", (e) => {
     let isAllInputsValid = isInputsValiditySuccess(inputsElements);
 
     if (isAllInputsValid) {
-        let customerData = getCustomerDataFromUser();
-        let specificIndex = localStorage.getItem("spIndex");
+        let customerData = getCustomerDataFromUser(true);
+        let specificIndex = getParameters("spIndex");
 
         if (specificIndex) {
             spliceDataInOriginalList(customers, specificIndex, customerData, 0);
         } else {
             spliceDataInOriginalList(customers, 0, customerData, 0);
         }
-        window.location.replace("table.html");
+        let newUrl = `table.html?add=true&&spIndex=${specificIndex}`
+        window.location.replace(newUrl);
     }
 })
 
@@ -415,26 +419,31 @@ function customersFiltredForUpdateOperation(originalCustomesList, customerTo) {
     return originalCustomesList.filter(customer => customer.id != customerTo.id);
 }
 
-window.onload = function() {
-    if (localStorage.getItem("duplicate")) {
+function getParameters(parName) {
+    let parameters = new URLSearchParams(window.location.search);
+    return parameters.get(parName)
+}
+
+function handleForm() {
+    if (getParameters("duplicate")) {
         formHeaderElement.innerText = "duplicate Customer";
         submitBtn.classList.add("hide-element");
         updateBtn.classList.remove("hide-element");
         updateBtn.textContent = "duplicate";
-        let index = localStorage.getItem("index");
+        let index = getParameters("index");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
         ToggledisabledInputs();
         checkInputsValidation(customers);
         upDateProgressValue(countValidInputs(inputsElements));
-    } else if (localStorage.getItem("update")) {
+    } else if (getParameters("update")) {
         formHeaderElement.innerText = "update Customer";
         submitBtn.classList.add("hide-element");
         updateBtn.classList.remove("hide-element")
-        let index = localStorage.getItem("index");
+        let index = getParameters("index");
         customerToUpdate = customers[index];
         fillInputsField(customerToUpdate);
         checkInputsValidation(customersFiltredForUpdateOperation(customers, customerToUpdate));
         upDateProgressValue(countValidInputs(inputsElements));
     }
-};
+}
