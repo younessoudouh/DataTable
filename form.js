@@ -32,6 +32,7 @@ function showProgress(progressValue) {
     progressBarElement.classList.remove("hide-element");
     progressElement.style.width = `${progressValue}%`;
     percentElement.textContent = `Progress: ${progressValue} %`;
+    progressValue === 100 ? progressBarElement.classList.add("flipe-bar") : progressBarElement.classList.remove("flipe-bar");
 }
 
 function upDateProgressValue(validInputs) {

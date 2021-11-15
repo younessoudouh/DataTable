@@ -37,7 +37,11 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div>
-                    <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
+                    <select id="customer-status" name="status" class="add-customer-input">
+                            <option value="" disbled selected hidden>Select status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
                     <small></small>
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -54,20 +58,16 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div>
+                    <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
                     <select id="currency" name="currency" class="add-customer-input">
                             <option value="" disbled selected hidden>Select currency</option>
                             <option value="EUR">EUR</option>
                             <option value="INR">INR</option>
                             <option value="USD">USD</option>
-                        </select>
-                    <small></small>
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div>
-                    <select id="customer-status" name="status" class="add-customer-input">
-                            <option value="" disbled selected hidden>Select status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
                         </select>
                     <small></small>
                     <i class="fas fa-check-circle"></i>
@@ -88,7 +88,7 @@
         </form>
 
     </div>
-    <script src="form.js" defer></script>
+    <script src="form.js"></script>
 </body>
 
 </html>

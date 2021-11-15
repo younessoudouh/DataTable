@@ -68,7 +68,6 @@ form {
 }
 
 .btn {
-    padding: 4px 5px;
     text-transform: uppercase;
     border: 0;
     color: #FFFFFF;
@@ -90,6 +89,7 @@ h2 {
     color: #7D90B2;
     grid-column: 1/3;
     margin-bottom: 10px;
+    animation: show-up-anim 1s ease-in;
 }
 
 .third-section {
@@ -101,6 +101,7 @@ h2 {
     gap: 5px;
     justify-content: center;
     grid-column: 1/3;
+    animation: show-up-anim 1s ease-in;
 }
 
 .btn:hover,
@@ -108,10 +109,10 @@ h2 {
     background: rgb(2, 71, 190);
     color: #ebf2ff;
     box-shadow: #5E5DF0 0 10px 20px -10px;
-    animation: buttons 1s infinite alternate;
+    animation: buttons-animation 1s infinite alternate;
 }
 
-@keyframes buttons {
+@keyframes buttons-animation {
     0% {
         box-shadow: #5E5DF0 0 10px 20px -5;
     }
@@ -221,4 +222,65 @@ form div {
 
 .hide-element {
     display: none;
+}
+
+.flipe-bar {
+    animation: prog-bar-anim .5s;
+}
+
+.second-section {
+    animation: slide-second-section .5s ease-in;
+}
+
+.first-section {
+    animation: slide-first-section .5s ease-in;
+}
+
+@keyframes prog-bar-anim {
+    0% {
+        transform: rotateX(0) translateX(-50%);
+    }
+    100% {
+        transform: rotateX(100deg) translateX(-50%);
+    }
+}
+
+@keyframes slide-second-section {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes slide-first-section {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+.third-section {
+    animation: slide-third-section .5s ease-in;
+}
+
+@keyframes slide-third-section {
+    0% {
+        transform: translatey(100%);
+    }
+    100% {
+        transform: translatey(0%);
+    }
+}
+
+@keyframes show-up-anim {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

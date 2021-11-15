@@ -383,23 +383,15 @@ function createElement(customer) {
     let { firstName, lastName, description, rate, balance, deposit, status, id, currency, higlighted, selected, protected } = customer;
     let row = document.createElement("tr");
     row.setAttribute("id", id);
-    let check = "";
-
-    if (selected) {
-        row.setAttribute("class", "selected");
-        check = "checked";
-    }
-
-    if (higlighted) {
-        row.setAttribute("class", "highlight");
-    }
-
+    selected ? row.setAttribute("class", "selected") : false;
+    higlighted ? row.setAttribute("class", "highlight") : false;
+    let customerCheked = selected ? "checked" : "";
     let customerLock = protected ? "display" : "";
     let customerUnlock = protected ? "" : "display";
 
     row.innerHTML = `
     <td class="relative">
-        <input type="checkbox" ${check} onchange="changeCustomerSelectedProperty(event ,customersReadyToRender,${id})" class="check">
+        <input type="checkbox" ${customerCheked} onchange="changeCustomerSelectedProperty(event ,customersReadyToRender,${id})" class="check">
         <i class="fas fa-plus" onclick="addCustomerInSpesificIndex(customers, ${id})"></i>
         <i class="far fa-copy" onclick="duplicateCustomer(customers, ${id})"></i>
         <i class="fas fa-lock ${customerLock}" onclick="unlockCustomer(customers,${id})"></i>

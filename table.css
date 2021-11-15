@@ -87,6 +87,9 @@ table th {
     padding: 12px 20px;
     color: var(--secondary-color);
     text-transform: uppercase;
+}
+
+table th:not(:first-child) {
     text-align: left;
 }
 
@@ -475,6 +478,7 @@ label {
 
 .relative {
     position: relative;
+    text-align: center;
 }
 
 tbody tr:hover .fa-plus,
