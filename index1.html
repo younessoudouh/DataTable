@@ -5,105 +5,90 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="table.css">
+    <link rel="stylesheet" href="form.css">
     <link rel="icon" href="images/icon.jpg" sizes="15px">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer"
     />
-    <title>Data Table</title>
+    <title>Form</title>
 </head>
 
 <body>
     <div class="container">
-        <div class="notification hidden" id="notification">
-            <div class="not-content"></div>
+        <div class="progress-bar hide-element" id="prog-bar">
+            <div class="progress" id="progress"></div>
+            <div class="percent" id="percent">Progress: 0%</div>
         </div>
-        <header>
-            <div class="filter-side">
-                <div class="filter">
-                    <img src="images/Filter.png" alt="filter" id="filter" class="img-filter">
-                    <div class="sort hide-element" id="sort-module">
-                        <div class="sort-by-name">
-                            <h3 class="sort-head">sort by:</h3>
-                            <div class="option-sort option">
-                                <label for="sort-default">Default</label>
-                                <input type="radio" name="op" id="sort-default" value="Default" checked>
-                            </div>
-                            <div class="option-sort option">
-                                <label for="sort-first-name">Ascending</label>
-                                <input type="radio" name="op" id="sort-first-name" value="asc">
-                            </div>
-                            <div class="option-sort option">
-                                <label for="sort-last-name">Descending</label>
-                                <input type="radio" name="op" id="sort-last-name" value="desc">
-                            </div>
-                        </div>
-                        <div class="sort-by-status">
-                            <h3 class="sort-head">Users:</h3>
-                            <div class="option-sort option">
-                                <label for="sort-All">All</label>
-                                <input type="radio" name="user" id="sort-All" value="all" checked>
-                            </div>
-                            <div class="option-sort option">
-                                <label for="sort-Active">Active</label>
-                                <input type="radio" name="user" id="sort-Active" value="active">
-                            </div>
-                            <div class="option-sort option">
-                                <label for="sort-inactive">Inactive</label>
-                                <input type="radio" name="user" id="sort-inactive" value="inactive">
-                            </div>
-                        </div>
-                    </div>
+        <form id="form">
+            <h2 id="form-header">Add Customer</h2>
+            <section class="first-section">
+                <div>
+                    <input type="text" class="add-customer-input" name="first-name" id="first-name" placeholder="First Name">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                <div class="search">
-                    <i class="fas fa-search"></i>
-                    <input type="text" class="search-input" id="search" placeholder="Search">
+                <div>
+                    <input type="text" class="add-customer-input" name="last-name" id="last-name" placeholder="Last Name">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
                 </div>
-            </div>
-            <div class="print-delet hidden" id="print-delet-gp">
-                <i class="fas fa-print print-selected" id="print"></i>
-                <i class="far fa-trash-alt delete-selected" id="delet-selected-customers"></i>
-            </div>
-            <button class="active add" id="add"><i class="fas fa-plus-circle"></i> <a href="#">Add Customer</a></button>
-        </header>
-        <table>
-            <thead id="thead">
-                <tr>
-                    <th><input type="checkbox" id="check-all"></th>
-                    <th class="sorting name-field" id="name">
-                        name
-                    </th>
-                    <th> description</th>
-                    <th>rate</th>
-                    <th>balance</th>
-                    <th>deposit</th>
-                    <th class="sorting" id="status">status</th>
-                    <th>
-                        <i class="fas fa-ellipsis-h"></i>
-                    </th>
-                </tr>
-            </thead>
-            <tbody id="table"></tbody>
-        </table>
-        <footer>
-            <div class="active-customers" id="active-clients">active customers: <strong>479</strong> / <small>706</small> </div>
-            <div class="right-side">
-                <ul>
-                    <li class="rows-page" id="slect-rows">Rows per page:
-                        <select id="select">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="15">15</option>
-                            <option value="20">20</option>
-                            <option value="25">25</option>
+                <div>
+                    <input type="text" class="add-customer-input" name="number" id="number" placeholder="Number" maxlength="10">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <select id="customer-status" name="status" class="add-customer-input">
+                            <option value="" disbled selected hidden>Select status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                         </select>
-                    </li>
-                    <li id="displayed-customer">1-10 of 706</li>
-                    <li><i class="fas fa-chevron-left" id="prevouis-page"></i><i class="fas fa-chevron-right" id="next-page"></i></li>
-                </ul>
-            </div>
-        </footer>
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </section>
+            <section class="second-section">
+                <div>
+                    <input type="text" class="add-customer-input" id="rate" name="rate" placeholder="Rate">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <input type="text" class="add-customer-input" id="deposit" name="deposit" placeholder="Deposit">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <input type="text" class="add-customer-input" id="balance" name="balance" placeholder="Balance">
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <select id="currency" name="currency" class="add-customer-input">
+                            <option value="" disbled selected hidden>Select currency</option>
+                            <option value="EUR">EUR</option>
+                            <option value="INR">INR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </section>
+            <section class="third-section">
+                <div>
+                    <textarea class="add-customer-input" name="description" id="description" rows="2" cols="20" placeholder="Description..."></textarea>
+                    <small></small>
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </section>
+            <section class="btn-group">
+                <button class="btn" id="submit" type="submit">Submit</button>
+                <button class="btn hide-element" id="update" type="button">update</button>
+                <button class="btn" id="cancel" type="button">Cancel</button>
+            </section>
+        </form>
+
     </div>
-    <script src="table.js" defer></script>
+    <script src="form.js"></script>
 </body>
 
 </html>
