@@ -312,7 +312,7 @@ sortModuleElement.addEventListener("click", (e) => {
 })
 
 addCustomer.addEventListener("click", () => {
-    let newUrl = "form.html?add=true&&spIndex=0"
+    let newUrl = "index.html?add=true&&spIndex=0"
     window.location.replace(newUrl);
 })
 
@@ -452,13 +452,13 @@ function unlockCustomer(originalCustomers, customerId) {
 function addCustomerInSpesificIndex(originalCustomers, customerId) {
     let index = originalCustomers.findIndex(customer => customer.id == customerId)
     index++;
-    let newUrl = `form.html?add=true&&spIndex=${index}`
+    let newUrl = `index.html?add=true&&spIndex=${index}`
     window.location.replace(newUrl);
 }
 
 function duplicateCustomer(originalCustomesList, customerId) {
     let index = originalCustomesList.findIndex(customer => customer.id == customerId);
-    let newUrl = `form.html?duplicate=true&&index=${index}`
+    let newUrl = `index.html?duplicate=true&&index=${index}`
     window.location.replace(newUrl);
 }
 
@@ -468,7 +468,7 @@ function updateCustomer(originalCustomesList, customerId) {
         return;
     } else {
         let index = originalCustomesList.findIndex(customer => customer.id == customerId);
-        let newUrl = `form.html?update=true&&index=${index}`
+        let newUrl = `index.html?update=true&&index=${index}`
         window.location.replace(newUrl);
     }
 }

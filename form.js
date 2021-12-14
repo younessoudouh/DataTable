@@ -55,11 +55,11 @@ updateBtn.addEventListener("click", () => {
         if (getParameters("duplicate")) {
             customerToUpdateIndex++;
             spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 0);
-            newUrl = `table.html?duplicate=true&&index=${customerToUpdateIndex}`;
+            newUrl = `index1.html?duplicate=true&&index=${customerToUpdateIndex}`;
 
         } else {
             spliceDataInOriginalList(customers, customerToUpdateIndex, customerData, 1);
-            newUrl = `table.html?update=true&&index=${customerToUpdateIndex}`;
+            newUrl = `index1.html?update=true&&index=${customerToUpdateIndex}`;
         }
         window.location.replace(newUrl);
     }
@@ -75,7 +75,7 @@ function ToggledisabledInputs() {
 }
 
 cancelBtn.addEventListener("click", () => {
-    window.location.replace("table.html");
+    window.location.replace("index1.html");
 })
 
 function getCustomerDataFromUser(higlighted) {
@@ -124,7 +124,7 @@ form.addEventListener("submit", (e) => {
         } else {
             spliceDataInOriginalList(customers, 0, customerData, 0);
         }
-        let newUrl = `table.html?add=true&&spIndex=${specificIndex}`
+        let newUrl = `index1.html?add=true&&spIndex=${specificIndex}`
         window.location.replace(newUrl);
     }
 })
